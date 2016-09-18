@@ -1,0 +1,75 @@
+version: '2'
+
+services:
+  mongodb:
+    container_name: ebisc-mongodb
+    image: centos/mongodb-32-centos7
+    networks:
+      - ebisc
+    environment:
+      - MONGODB_USER=ebisc
+      - MONGODB_PASSWORD=ebisc
+      - MONGODB_DATABASE=ebisc
+      - MONGODB_ADMIN_PASSWORD=admin_password
+  cpanm:
+    image: perl:5.20
+    volumes:
+      - $PWD:/usr/src/myapp
+    command: cpanm -l /usr/src/myapp/local --installdeps /usr/src/myapp
+  tracker:
+    image: perl:5.20
+    container_name: ebisc-datatracker
+    networks:
+      - ebisc
+    volumes:
+      - $PWD:/usr/src/myapp
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PASS=ebisc
+      - MONGODB_USER=ebisc
+      - HPSCREG_USER=$HPSCREG_USER
+      - HPSCREG_PASS=$HPSCREG_PASS
+      - IMS_USER=$IMS_USER
+      - IMS_PASS=$IMS_PASS
+    links:
+      - mongodb
+    working_dir: /usr/src/myapp
+    command: perl -I./lib -I/usr/src/myapp/local/lib/perl5 run.pl
+    depends_on:
+      - mongodb
+  webserver:
+    image: golang
+    container_name: ebisc-webserver
+    networks:
+      - ebisc
+    volumes:
+      - $PWD/webserver:/go
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PASS=ebisc
+      - MONGODB_USER=ebisc
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    command: tracker
+    ports:
+      - "8000:8000"
+  webserver_build:
+    image: golang
+    volumes:
+      - $PWD/webserver:/go
+    command: go get tracker
+  db_client:
+    container_name: ebisc-mongodb-client
+    image: centos/mongodb-32-centos7
+    networks:
+      - ebisc
+    links:
+      - mongodb
+    command: mongo -u ebisc -p ebisc mongodb/ebisc
+    depends_on:
+      - mongodb
+networks:
+  ebisc:
+    external: true
