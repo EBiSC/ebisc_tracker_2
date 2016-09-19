@@ -5,7 +5,7 @@ import (
     "net/http"
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
-    "fmt"
+    "log"
 )
 
 type apiError struct {
@@ -28,7 +28,7 @@ func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   defer session.Close()
   if err := h.fn(&res, r, session); err != nil {
     http.Error(w, err.message, err.code)
-    fmt.Println(err.error.ErrorStack())
+    log.Println(err.error.ErrorStack())
     return
   }
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
