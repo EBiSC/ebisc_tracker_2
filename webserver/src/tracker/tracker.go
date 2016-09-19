@@ -6,8 +6,9 @@ import (
     "net/http"
     "time"
     "flag"
-
     "github.com/gorilla/mux"
+
+    "tracker/api"
 )
 
 func main() {
@@ -23,17 +24,11 @@ func main() {
   flag.Parse()
 
   dbInfo.Addrs = []string{dbhost}
-  session, err := mgo.DialWithInfo(&dbInfo)
-  if err != nil {
-    panic(err)
-  }
 
   r := mux.NewRouter()
   r.PathPrefix("/static/").Handler(http.FileServer(http.Dir(dir)))
 
-  api := r.PathPrefix("/api").Subrouter()
-  api.Handle("/test", &apiHandler{testHandlerFn, session});
-  api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
+  api.Serve(r, &dbInfo)
 
   r.PathPrefix("/").Handler(&angularDir{dir})
 
