@@ -8,11 +8,11 @@ import (
     "github.com/gorilla/mux"
 
     "tracker/api"
+    "tracker/angular"
 )
 
 func main() {
-  var dbhost string
-  var dir string
+  var dbhost, dir string
   var apiConfig api.Config
 
   flag.StringVar(&dir, "dir", "/usr/src/myapp", "the directory to serve files from. Defaults to /usr/src/myapp")
@@ -25,11 +25,10 @@ func main() {
   apiConfig.Addrs = []string{dbhost}
 
   r := mux.NewRouter()
-  r.PathPrefix("/static/").Handler(http.FileServer(http.Dir(dir)))
 
   api.AddHandlers(r, &apiConfig)
+  angular.AddHandlers(r, dir)
 
-  r.PathPrefix("/").Handler(&angularDir{dir})
 
   srv := &http.Server{
     Handler: r,
