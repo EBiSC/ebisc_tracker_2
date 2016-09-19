@@ -9,6 +9,8 @@ import (
     "github.com/gorilla/mux"
 )
 
+type Config mgo.DialInfo
+
 type apiError struct {
   error *errors.Error
   message string
@@ -21,6 +23,16 @@ type apiHandlerFn func(*apiContent, *http.Request, *mgo.Session) *apiError
 type apiHandler struct {
   fn apiHandlerFn
   db *mgo.Session
+}
+
+func AddHandlers(r *mux.Router, dbInfo *Config) {
+  session, err := mgo.DialWithInfo((*mgo.DialInfo)(dbInfo))
+  if err != nil {
+    panic(err)
+  }
+  api := r.PathPrefix("/api").Subrouter()
+  api.Handle("/test", &apiHandler{testHandlerFn, session});
+  api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
 }
 
 
@@ -38,14 +50,4 @@ func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   if err := json.NewEncoder(w).Encode(res); err != nil {
     panic(err);
   }
-}
-
-func Serve(r *mux.Router, dbInfo *mgo.DialInfo) {
-  session, err := mgo.DialWithInfo(dbInfo)
-  if err != nil {
-    panic(err)
-  }
-  api := r.PathPrefix("/api").Subrouter()
-  api.Handle("/test", &apiHandler{testHandlerFn, session});
-  api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
 }
