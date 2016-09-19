@@ -53,7 +53,7 @@ services:
       - mongodb
     depends_on:
       - mongodb
-    command: tracker -dir /usr/src/myapp
+    command: tracker
     ports:
       - "8000:8000"
   webserver_build:
