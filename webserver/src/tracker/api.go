@@ -6,6 +6,7 @@ import (
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
     "log"
+    "fmt"
 )
 
 type apiError struct {
@@ -21,6 +22,15 @@ type apiHandler struct {
   fn apiHandlerFn
   db *mgo.Session
 }
+
+type angularDir struct {
+  dir string
+}
+
+func (dir angularDir) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+  http.ServeFile(w, r, fmt.Sprintf("%s/index.html", dir.dir))
+}
+
 
 func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   var res apiContent

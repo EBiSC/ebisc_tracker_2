@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-  var dir, dbhost string
+  var dbhost string
+  var dir string
   var dbInfo mgo.DialInfo
 
   flag.StringVar(&dir, "dir", "/usr/src/myapp", "the directory to serve files from. Defaults to /usr/src/myapp")
@@ -28,11 +29,13 @@ func main() {
   }
 
   r := mux.NewRouter()
-  r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
+  r.PathPrefix("/static/").Handler(http.FileServer(http.Dir(dir)))
 
   api := r.PathPrefix("/api").Subrouter()
   api.Handle("/test", &apiHandler{testHandlerFn, session});
   api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
+
+  r.PathPrefix("/").Handler(&angularDir{dir})
 
   srv := &http.Server{
     Handler: r,
