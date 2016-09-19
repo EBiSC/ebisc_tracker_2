@@ -14,7 +14,7 @@ services:
   cpanm:
     image: perl:5.20
     volumes:
-      - $PWD:/usr/src/myapp
+      - $PWD/tracker:/usr/src/myapp
     command: cpanm -l /usr/src/myapp/local --installdeps /usr/src/myapp
   tracker:
     image: perl:5.20
@@ -22,7 +22,7 @@ services:
     networks:
       - ebisc
     volumes:
-      - $PWD:/usr/src/myapp
+      - $PWD/tracker:/usr/src/myapp
     environment:
       - MONGODB_HOST=mongodb
       - MONGODB_PASS=ebisc
