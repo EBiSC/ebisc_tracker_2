@@ -20,7 +20,8 @@ func main() {
   r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
 
   api := r.PathPrefix("/api").Subrouter()
-  api.HandleFunc("/test", TestHandler);
+  api.Handle("/test", apiHandler(testHandlerFn));
+  api.Handle("/code_run", apiHandler(codeRunHandlerFn));
 
   srv := &http.Server{
     Handler: r,
