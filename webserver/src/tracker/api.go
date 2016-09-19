@@ -3,6 +3,7 @@ package main
 import (
     "encoding/json"
     "net/http"
+    "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
     "fmt"
 )
@@ -15,11 +16,17 @@ type apiError struct {
 
 type apiContent interface{}
 
-type apiHandler func(*apiContent, *http.Request) *apiError
+type apiHandlerFn func(*apiContent, *http.Request, *mgo.Session) *apiError
+type apiHandler struct {
+  fn apiHandlerFn
+  db *mgo.Session
+}
 
-func (fn apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   var res apiContent
-  if err := fn(&res, r); err != nil {
+  session := h.db.Copy()
+  defer session.Close()
+  if err := h.fn(&res, r, session); err != nil {
     http.Error(w, err.message, err.code)
     fmt.Println(err.error.ErrorStack())
     return

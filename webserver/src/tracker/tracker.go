@@ -3,6 +3,7 @@ package main
 import (
     //"fmt"
     "log"
+    "gopkg.in/mgo.v2"
     "net/http"
     "time"
     "flag"
@@ -19,9 +20,14 @@ func main() {
   r := mux.NewRouter()
   r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(dir))))
 
+  session, err := mgo.Dial("mongodb://ebisc:ebisc@mongodb/ebisc")
+  if err != nil {
+    panic(err)
+  }
+
   api := r.PathPrefix("/api").Subrouter()
-  api.Handle("/test", apiHandler(testHandlerFn));
-  api.Handle("/code_run", apiHandler(codeRunHandlerFn));
+  api.Handle("/test", &apiHandler{testHandlerFn, session});
+  api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
 
   srv := &http.Server{
     Handler: r,
