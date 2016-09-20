@@ -3,25 +3,24 @@ package api
 import (
     "net/http"
     "gopkg.in/mgo.v2"
-    "github.com/go-errors/errors"
     "labix.org/v2/mgo/bson"
     "sync"
 )
 
-func testHandlerFn(res *apiContent, r *http.Request, db *mgo.Session) *apiError{
-  *res = map[string]interface{}{
+func testHandlerFn(r *http.Request, db *mgo.Session) apiContent{
+  res := map[string]interface{}{
     "error": false,
     "text": "this is a test",
   }
-  return nil
+  return res
 }
 
-func codeRunHandlerFn(res *apiContent, r *http.Request, session *mgo.Session) *apiError{
+func codeRunHandlerFn(r *http.Request, session *mgo.Session) apiContent{
 
   c := session.DB("ebisc").C("code_run")
   m := make(bson.M)
   if err := c.Find(nil).Sort("-date").One(&m); err != nil {
-    return &apiError{errors.Wrap(err, 1), "Database find error", 500}
+    panic(newApiError(err, "Database find error", 500))
   }
 
   if modules, ok := m["modules"].([]interface{}); ok {
@@ -38,22 +37,22 @@ func codeRunHandlerFn(res *apiContent, r *http.Request, session *mgo.Session) *a
 
   delete(m, "_id")
   
-  *res = m
-  return nil
+  return m
 }
 
 func expandModule(m *interface{}, session *mgo.Session) {
-  module, ok := (*m).(bson.M)
-  if (!ok) {
+  var oldModule bson.M
+  var ok bool
+  if oldModule, ok = (*m).(bson.M); !ok {
     return
   }
-  newM := make(bson.M)
+  expandedModule := make(bson.M)
   c := session.DB("ebisc").C("test_module")
-  if err := c.Find(bson.M{"module": module["module"]}).One(&newM); err != nil {
+  if err := c.Find(bson.M{"module": oldModule["module"]}).One(&expandedModule); err != nil {
     return
   }
-  for key, val := range newM {
-    module[key] = val
+  for key, val := range expandedModule {
+    oldModule[key] = val
   }
 
 }
