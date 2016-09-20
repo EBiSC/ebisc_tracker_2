@@ -18,13 +18,13 @@ func testHandlerFn(res *apiContent, r *http.Request, db *mgo.Session) *apiError{
 func codeRunHandlerFn(res *apiContent, r *http.Request, session *mgo.Session) *apiError{
 
   c := session.DB("ebisc").C("code_run")
-  m := new(bson.M)
-  if err := c.Find(nil).Sort("-date").One(m); err != nil {
+  m := make(bson.M)
+  if err := c.Find(nil).Sort("-date").One(&m); err != nil {
     return &apiError{errors.Wrap(err, 1), "Database find error", 500}
   }
 
-  delete(*m, "_id")
+  delete(m, "_id")
   
-  *res = *m
+  *res = m
   return nil
 }
