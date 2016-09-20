@@ -32,7 +32,7 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   }
   api := r.PathPrefix("/api").Subrouter()
   api.Handle("/test", &apiHandler{testHandlerFn, session});
-  api.Handle("/code_run", &apiHandler{codeRunHandlerFn, session});
+  api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
 }
 
 

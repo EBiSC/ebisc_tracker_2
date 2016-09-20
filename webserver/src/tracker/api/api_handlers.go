@@ -4,6 +4,7 @@ import (
     "net/http"
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
+    "labix.org/v2/mgo/bson"
 )
 
 func testHandlerFn(res *apiContent, r *http.Request, db *mgo.Session) *apiError{
@@ -17,8 +18,13 @@ func testHandlerFn(res *apiContent, r *http.Request, db *mgo.Session) *apiError{
 func codeRunHandlerFn(res *apiContent, r *http.Request, session *mgo.Session) *apiError{
 
   c := session.DB("ebisc").C("code_run")
-  if err := c.Find(nil).Sort("-date").One(res); err != nil {
+  m := new(bson.M)
+  if err := c.Find(nil).Sort("-date").One(m); err != nil {
     return &apiError{errors.Wrap(err, 1), "Database find error", 500}
   }
+
+  delete(*m, "_id")
+  
+  *res = *m
   return nil
 }
