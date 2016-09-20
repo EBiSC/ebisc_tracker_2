@@ -19,7 +19,7 @@ func codeRunHandlerFn(r *http.Request, session *mgo.Session) apiContent{
   c := session.DB("ebisc").C("code_run")
   m := make(bson.M)
   if err := c.Find(nil).Sort("-date").One(&m); err != nil {
-    panic(newApiError(err, "Database find error", 500))
+    panic(newApiError(err, "Database find error"))
   }
 
   if modules, ok := m["modules"].([]interface{}); ok {
@@ -37,12 +37,12 @@ func expandModule(m *interface{}, session *mgo.Session) {
   var oldModule bson.M
   var ok bool
   if oldModule, ok = (*m).(bson.M); !ok {
-    panic(newApiError("type conversion to bson.M", "Unexpected json structure", 500))
+    panic(newApiError("type conversion of module to a map", "Unexpected json structure"))
   }
   expandedModule := make(bson.M)
   c := session.DB("ebisc").C("test_module")
   if err := c.Find(bson.M{"module": oldModule["module"]}).One(&expandedModule); err != nil {
-    panic(newApiError(err, "Database find error", 500))
+    panic(newApiError(err, "Database find error"))
   }
   for key, val := range expandedModule {
     oldModule[key] = val

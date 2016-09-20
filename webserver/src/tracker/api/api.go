@@ -6,7 +6,6 @@ import (
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
     "log"
-    //"fmt"
     "github.com/gorilla/mux"
 )
 
@@ -22,12 +21,12 @@ func (e *apiError) Error() string {
   return e.error.Error()
 }
 
-func newApiError(e interface{}, m string, code int) *apiError {
+func newApiError(e interface{}, m string) *apiError {
   res := map[string]interface{}{
     "error": true,
     "text": m,
   }
-  return &apiError{errors.Wrap(e, 1), res, code}
+  return &apiError{errors.Wrap(e, 1), res, http.StatusInternalServerError}
 }
 
 type apiContent interface{}
@@ -63,7 +62,7 @@ func writeResponse(w http.ResponseWriter, res *apiContent) {
     var apiErr *apiError
     var ok bool
     if apiErr, ok = r.(*apiError); !ok {
-      apiErr = newApiError(r, "Server error", 500)
+      apiErr = newApiError(r, "Server error")
     }
     w.WriteHeader(apiErr.code)
     log.Println(apiErr.error.ErrorStack())
