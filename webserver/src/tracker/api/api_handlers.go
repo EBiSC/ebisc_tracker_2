@@ -4,7 +4,6 @@ import (
     "net/http"
     "gopkg.in/mgo.v2"
     "labix.org/v2/mgo/bson"
-    "sync"
 )
 
 func testHandlerFn(r *http.Request, db *mgo.Session) apiContent{
@@ -24,15 +23,9 @@ func codeRunHandlerFn(r *http.Request, session *mgo.Session) apiContent{
   }
 
   if modules, ok := m["modules"].([]interface{}); ok {
-    var wg sync.WaitGroup
-    wg.Add(len(modules))
-    for i, _ := range modules {
-      go func(i int) {
-        defer wg.Done()
-        expandModule(&modules[i], session)
-      }(i)
+    for _, module := range modules {
+      expandModule(&module, session)
     }
-    wg.Wait()
   }
 
   delete(m, "_id")
@@ -44,12 +37,12 @@ func expandModule(m *interface{}, session *mgo.Session) {
   var oldModule bson.M
   var ok bool
   if oldModule, ok = (*m).(bson.M); !ok {
-    return
+    panic(newApiError("type conversion to bson.M", "Unexpected json structure", 500))
   }
   expandedModule := make(bson.M)
   c := session.DB("ebisc").C("test_module")
   if err := c.Find(bson.M{"module": oldModule["module"]}).One(&expandedModule); err != nil {
-    return
+    panic(newApiError(err, "Database find error", 500))
   }
   for key, val := range expandedModule {
     oldModule[key] = val
