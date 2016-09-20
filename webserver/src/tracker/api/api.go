@@ -31,7 +31,7 @@ func newApiError(e interface{}, m string) *apiError {
 
 type apiContent interface{}
 
-type apiHandlerFn func(*http.Request, *mgo.Session) apiContent
+type apiHandlerFn func(map[string]string, *mgo.Session) apiContent
 type apiHandler struct {
   fn apiHandlerFn
   db *mgo.Session
@@ -52,8 +52,9 @@ func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   res := new(apiContent)
   defer writeResponse(w, res)
   session := h.db.Copy()
+  vars := mux.Vars(r)
   defer session.Close()
-  *res = h.fn(r, session)
+  *res = h.fn(vars, session)
 }
 
 func writeResponse(w http.ResponseWriter, res *apiContent) {

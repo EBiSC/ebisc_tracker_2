@@ -1,12 +1,11 @@
 package api
 
 import (
-    "net/http"
     "gopkg.in/mgo.v2"
     "labix.org/v2/mgo/bson"
 )
 
-func testHandlerFn(r *http.Request, db *mgo.Session) apiContent{
+func testHandlerFn(vars map[string]string, db *mgo.Session) apiContent{
   res := map[string]interface{}{
     "error": false,
     "text": "this is a test",
@@ -14,7 +13,7 @@ func testHandlerFn(r *http.Request, db *mgo.Session) apiContent{
   return res
 }
 
-func codeRunHandlerFn(r *http.Request, session *mgo.Session) apiContent{
+func codeRunHandlerFn(vars map[string]string, session *mgo.Session) apiContent{
 
   c := session.DB("ebisc").C("code_run")
   m := make(bson.M)
