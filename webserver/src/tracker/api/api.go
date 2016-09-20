@@ -13,20 +13,34 @@ type Config mgo.DialInfo
 
 type apiError struct {
   error *errors.Error
-  res apiContent
+  message string
   code int
 }
 
 func (e *apiError) Error() string {
+  if (e.error == nil) {
+    return ""
+  }
   return e.error.Error()
 }
 
-func newApiError(e interface{}, m string) *apiError {
-  res := map[string]interface{}{
+func (e *apiError) toApiContent() apiContent {
+  return map[string]interface{}{
     "error": true,
-    "text": m,
+    "text": e.message,
   }
-  return &apiError{errors.Wrap(e, 1), res, http.StatusInternalServerError}
+}
+
+func newApiError(e interface{}, m string) *apiError {
+  return &apiError{errors.Wrap(e, 1), m, http.StatusInternalServerError}
+}
+
+func newBadRequest(m string) *apiError {
+  return &apiError{nil, m, http.StatusBadRequest}
+}
+
+func newNotFound(m string) *apiError {
+  return &apiError{nil, m, http.StatusNotFound}
 }
 
 type apiContent interface{}
@@ -45,6 +59,7 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   api := r.PathPrefix("/api").Subrouter()
   api.Handle("/test", &apiHandler{testHandlerFn, session});
   api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
+  api.Handle("/code_run/{date}", &apiHandler{codeRunHandlerFn, session});
 }
 
 
@@ -66,8 +81,10 @@ func writeResponse(w http.ResponseWriter, res *apiContent) {
       apiErr = newApiError(r, "Server error")
     }
     w.WriteHeader(apiErr.code)
-    log.Println(apiErr.error.ErrorStack())
-    *res = apiErr.res
+    if (apiErr.error != nil) {
+      log.Println(apiErr.error.ErrorStack())
+    }
+    *res = apiErr.toApiContent()
   } else {
     w.WriteHeader(http.StatusOK)
   }
