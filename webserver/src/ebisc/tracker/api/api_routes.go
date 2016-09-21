@@ -15,5 +15,6 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   api.Handle("/code_run", &apiHandler{codeRunListHandlerFn, session});
   api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
   api.Handle("/code_run/{date}", &apiHandler{codeRunHandlerFn, session});
+  api.Handle("/fails/module/{module}", &apiHandler{moduleHandlerFn, session});
   api.PathPrefix("/").Handler(&apiHandler{notFoundHandlerFn, session});
 }
