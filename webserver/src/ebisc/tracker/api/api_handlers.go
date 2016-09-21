@@ -3,11 +3,8 @@ package api
 import (
     "gopkg.in/mgo.v2"
     "gopkg.in/mgo.v2/bson"
-    "time"
-    "net/url"
-    "strconv"
 )
-func testHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *apiResponse{
+func testHandlerFn(vars apiVars, db *mgo.Session) *apiResponse{
   res := map[string]interface{}{
     "error": false,
     "text": "this is a test",
@@ -15,20 +12,16 @@ func testHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *ap
   return newOKRes(res)
 }
 
-func examHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func examHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
 
   c := session.DB("ebisc").C("exam")
   m := make(bson.M)
-  if dateStr := vars["date"]; len(dateStr) > 0 {
-    if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-      return newBadRequestRes("Date not valid RFC3339Nano")
-    } else {
-      if err := c.Find(bson.M{"date": date}).One(&m); err != nil {
-        if (err == mgo.ErrNotFound) {
-          return newNotFoundRes()
-        }
-        panic(newApiError(err, "Database find error"))
+  if vars["date"] != nil {
+    if err := c.Find(bson.M{"date": vars["date"]}).One(&m); err != nil {
+      if (err == mgo.ErrNotFound) {
+        return newNotFoundRes()
       }
+      panic(newApiError(err, "Database find error"))
     }
   } else {
     if err := c.Find(nil).Sort("-date").One(&m); err != nil {
@@ -62,15 +55,11 @@ func expandQuestion(q bson.M, session *mgo.Session) {
   }
 }
 
-func examListHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func examListHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("exam")
   var query bson.M = nil
-  if dateStr := form.Get("date"); len(dateStr) > 0 {
-    if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-      return newBadRequestRes("Date not valid RFC3339Nano")
-    } else {
-      query = bson.M{"date": bson.M{"$lt": date}};
-    }
+  if vars["date"] != nil {
+    query = bson.M{"date": bson.M{"$lt": vars["date"]}};
   }
   var items []interface{}
   if err := c.Find(query).Sort("-date").Limit(10).Select(bson.M{"date": 1, "_id": 0}).All(&items); err != nil {
@@ -80,23 +69,19 @@ func examListHandlerFn(vars map[string]string, form url.Values, session *mgo.Ses
   return newOKRes(m)
 }
 
-func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func failHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("question_fail")
   queryParams := bson.M{};
 
-  if date, err := time.Parse(time.RFC3339Nano, vars["date"]); err != nil {
-    return newBadRequestRes("Date not valid RFC3339Nano")
-  } else {
-    queryParams["date"] = date
+  queryParams["date"] = vars["date"]
+  if vars["cell_line"] != nil {
+    queryParams["cellLine"] = vars["cell_line"]
   }
-  if str := form.Get("cell_line"); len(str) > 0 {
-    queryParams["cellLine"] = str
+  if vars["batch"] != nil {
+    queryParams["batch"] = vars["batch"]
   }
-  if str := form.Get("batch"); len(str) > 0 {
-    queryParams["batch"] = str
-  }
-  if str := form.Get("module"); len(str) > 0 {
-    queryParams["module"] = str
+  if vars["module"] != nil {
+    queryParams["module"] = vars["module"]
   }
 
   query := c.Find(queryParams);
@@ -110,24 +95,18 @@ func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session
 
   query = query.Sort("_id").Limit(100).Select(bson.M{"_id": 0})
 
-  if skipStr := form.Get("offset"); len(skipStr) > 0 {
-    if skip, err := strconv.Atoi(skipStr); err != nil{
-      return newBadRequestRes("skip not a valid integer")
-    } else {
-      query = query.Skip(skip)
-      m["pageOffset"] = skip
-    }
+  if skip := vars["offset"]; skip != nil {
+    skipInt := skip.(int)
+    query = query.Skip(skipInt)
+    m["pageOffset"] = skipInt
   } else {
     m["pageOffset"] = 0
   }
 
-  if limitStr := form.Get("limit"); len(limitStr) > 0 {
-    if limit, err := strconv.Atoi(limitStr); err != nil{
-      return newBadRequestRes("limit not a valid integer")
-    } else {
-      m["pageLimit"] = limit
-      query = query.Limit(limit)
-    }
+  if limit := vars["limit"]; limit != nil {
+    limitInt := limit.(int)
+    m["pageLimit"] = limitInt
+    query = query.Limit(limitInt)
   } else {
     m["pageLimit"] = 100
     query = query.Limit(100)
@@ -142,34 +121,23 @@ func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session
   return newOKRes(m)
 }
 
-func lineFailHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func lineFailHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("question_fail")
   m := bson.M{}
   var items []interface{}
 
   queryParams := bson.M{}
-  if date, err := time.Parse(time.RFC3339Nano, vars["date"]); err != nil {
-    return newBadRequestRes("Date not valid RFC3339Nano")
-  } else {
-    queryParams["date"] = date
-  }
-  if moduleStr := form.Get("module"); len(moduleStr) > 0 {
-    queryParams["module"] = moduleStr
+  queryParams["date"] = vars["date"]
+  if module := vars["module"]; module != nil {
+    queryParams["module"] = module
   }
 
-  skip := 0
-  if skipStr := form.Get("offset"); len(skipStr) > 0 {
-    var err error 
-    if skip, err = strconv.Atoi(skipStr); err != nil{
-      return newBadRequestRes("skip not a valid integer")
-    }
+  var skip, limit interface{}
+  if skip = vars["offset"]; skip == nil {
+    skip = 0
   }
-  limit := 100
-  if limitStr := form.Get("limit"); len(limitStr) > 0 {
-    var err error 
-    if limit, err = strconv.Atoi(limitStr); err != nil{
-      return newBadRequestRes("limit not a valid integer")
-    }
+  if limit = vars["limit"]; skip == nil {
+    limit = 100
   }
 
   o1 := bson.M{"$match": queryParams}

@@ -3,19 +3,14 @@ package api
 import (
     "encoding/json"
     "net/http"
-    "net/url"
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
     "log"
     "github.com/gorilla/mux"
+    "strconv"
+    "fmt"
+    "time"
 )
-
-type Config mgo.DialInfo
-
-type apiError struct {
-  error *errors.Error
-  message string
-}
 
 func (e *apiError) Error() string {
   return e.error.Error()
@@ -45,18 +40,19 @@ func newNotFoundRes() *apiResponse {
   return newErrorRes("Not found", http.StatusNotFound)
 }
 
-type apiResponse struct {
-  content interface{}
-  code int
+func AddHandlers(r *mux.Router, dbInfo *Config) {
+  session, err := mgo.DialWithInfo((*mgo.DialInfo)(dbInfo))
+  if err != nil {
+    panic(err)
+  }
+  api := r.PathPrefix("/api").Subrouter()
+  for _, ep := range endpoints {
+    api.Handle(ep.route, &apiHandler{ep.fn, ep.opts, session})
+  }
+  api.PathPrefix("/").Handler(&apiHandler{notFoundHandlerFn, nil, session});
 }
 
-type apiHandlerFn func(map[string]string, url.Values, *mgo.Session) *apiResponse
-type apiHandler struct {
-  fn apiHandlerFn
-  db *mgo.Session
-}
-
-func notFoundHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *apiResponse{
+func notFoundHandlerFn(vars apiVars, db *mgo.Session) *apiResponse{
   return newNotFoundRes()
 }
 
@@ -67,10 +63,38 @@ func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     session := h.db.Copy()
     defer session.Close()
     vars := mux.Vars(r)
-    if err := r.ParseForm(); err != nil {
-      panic(newApiError(err, "Form parse error"))
+
+    m := apiVars{}
+
+    for oKey, oType := range h.opts {
+      oValStr := vars[oKey]
+      if len(oValStr) == 0 {
+       oValStr = r.FormValue(oKey)
+      }
+      if len(oValStr) == 0 {
+       continue
+      }
+
+      switch oType {
+        case tSTR:
+            m[oKey] = oValStr
+        case tINT:
+            var err error
+            if m[oKey], err = strconv.Atoi(oValStr); err != nil{
+              ch <- newBadRequestRes(fmt.Sprintf("%s not a valid integer", oKey))
+              return
+            }
+        case tDATE:
+            var err error
+            if m[oKey], err = time.Parse(time.RFC3339Nano, oValStr); err != nil {
+              ch <- newBadRequestRes(fmt.Sprintf("%s not a valid RFC3339Nano", oKey))
+              return
+            }
+      }
+
     }
-    ch <- h.fn(vars, r.Form, session)
+
+    ch <- h.fn(m, session)
   }()
   res := <-ch
   w.Header().Set("Content-Type", "application/json; charset=UTF-8")
