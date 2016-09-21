@@ -10,7 +10,7 @@ with 'EBiSC::MongoDB::Role::Collection';
 sub ensure_indexes {
   my ($self) = @_;
   $self->c->indexes->create_one( [date => -1]);
-  $self->c->indexes->create_one( [cell_line => 1]);
+  $self->c->indexes->create_one( [cellLine => 1]);
   $self->c->indexes->create_one( [module => 1]);
 }
 

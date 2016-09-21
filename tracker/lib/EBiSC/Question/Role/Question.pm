@@ -20,7 +20,7 @@ sub add_failed_batch {
   die "did not get cell_line" if !$options{cell_line};
   push(@{$self->failed_items}, {
     batch => $options{batch},
-    cell_line => $options{cell_line},
+    cellLine => $options{cell_line},
   });
 }
 
@@ -28,7 +28,7 @@ sub add_failed_line {
   my ($self, %options) = @_;
   die "did not get cell_line" if !$options{cell_line};
   push(@{$self->failed_items}, {
-    cell_line => $options{cell_line},
+    cellLine => $options{cell_line},
   });
 }
 

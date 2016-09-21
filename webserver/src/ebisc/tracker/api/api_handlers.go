@@ -81,17 +81,13 @@ func examListHandlerFn(vars map[string]string, form url.Values, session *mgo.Ses
 }
 
 func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
-  c := session.DB("ebisc").C("test_fail")
+  c := session.DB("ebisc").C("question_fail")
   queryParams := bson.M{};
 
-  if dateStr := form.Get("date"); len(dateStr) == 0 {
-    return newBadRequestRes("Date required as a query parameter")
+  if date, err := time.Parse(time.RFC3339Nano, vars["date"]); err != nil {
+    return newBadRequestRes("Date not valid RFC3339Nano")
   } else {
-    if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-      return newBadRequestRes("Date not valid RFC3339Nano")
-    } else {
-      queryParams["date"] = date
-    }
+    queryParams["date"] = date
   }
   if str := form.Get("cell_line"); len(str) > 0 {
     queryParams["cellLine"] = str
