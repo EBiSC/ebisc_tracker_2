@@ -1,10 +1,10 @@
-package EBiSC::MongoDB::TestFail;
+package EBiSC::MongoDB::QuestionFail;
 use Moose;
 use namespace::autoclean;
 use strict;
 use warnings;
 
-has 'name' => (is => 'ro', isa => 'Str', default => 'test_fail');
+has 'name' => (is => 'ro', isa => 'Str', default => 'question_fail');
 with 'EBiSC::MongoDB::Role::Collection';
 
 sub ensure_indexes {

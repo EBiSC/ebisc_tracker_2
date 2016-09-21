@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use EBiSC::Utils::hPSCreg qw();
 use EBiSC::Utils::IMS qw();
-use EBiSC::Utils::Test qw();
+use EBiSC::Utils::Question qw();
 use EBiSC::API::hPSCreg;
 use EBiSC::API::IMS;
 use EBiSC::MongoDB;
@@ -34,9 +34,9 @@ EBiSC::Utils::hPSCreg::sync_db(
 );
 
 $db->code_run->ensure_indexes;
-$db->test_fail->ensure_indexes;
-$db->test_module->ensure_indexes;
+$db->question_fail->ensure_indexes;
+$db->question_module->ensure_indexes;
 
-EBiSC::Utils::Test::run_tests(
+EBiSC::Utils::Question::run_questions(
   db => $db
 );

@@ -1,4 +1,4 @@
-package EBiSC::Utils::Test;
+package EBiSC::Utils::Question;
 use Time::Moment;
 use strict;
 use warnings;
@@ -10,7 +10,7 @@ our @modules = qw(
   hPSCregIMSAgree::IMSExported hPSCregIMSAgree::hPSCregExported
 );
 
-sub run_tests {
+sub run_questions {
   my (%options) = @_;
   $options{now} //= Time::Moment->now_utc;
   my @failed_modules;
@@ -37,38 +37,38 @@ sub run_module {
   my (%options) = @_;
   my $db = $options{db};
 
-  my $full_module = 'EBiSC::Test::'.$options{module};
+  my $full_module = 'EBiSC::Question::'.$options{module};
   eval "require $full_module";
   if ($@) {
-    warn "skipping test $full_module: $@";
+    warn "skipping question $full_module: $@";
     return;
   }
 
-  my $tester = $full_module->new(
+  my $questioner = $full_module->new(
     db => $db,
   );
 
-  $db->test_module->c->update_one(
+  $db->question_module->c->update_one(
     [ module => $options{module}],
     { '$set' => {
       module => $options{module},
-      title => $tester->title,
-      description => $tester->description,
+      title => $questioner->title,
+      description => $questioner->description,
     }},
     { upsert => boolean::true},
   );
 
-  $tester->run();
+  $questioner->run();
 
-  foreach my $fail (@{$tester->failed_items}) {
+  foreach my $fail (@{$questioner->failed_items}) {
     $fail->{module} = $options{module},
     $fail->{date} = $options{now},
-    $db->test_fail->c->insert_one($fail);
+    $db->question_fail->c->insert_one($fail);
   }
 
   return {
-    num_tested => $tester->num_tested,
-    num_failed => $tester->num_failed,
+    num_tested => $questioner->num_tested,
+    num_failed => $questioner->num_failed,
   };
 
 }

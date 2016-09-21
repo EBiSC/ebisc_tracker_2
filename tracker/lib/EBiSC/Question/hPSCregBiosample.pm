@@ -1,4 +1,4 @@
-package EBiSC::Test::hPSCregBiosample;
+package EBiSC::Question::hPSCregBiosample;
 use Moose;
 use namespace::autoclean;
 use boolean qw(true false);
@@ -33,6 +33,6 @@ sub run {
 
 }
 
-with 'EBiSC::Test::Role::Test';
+with 'EBiSC::Question::Role::Question';
 
 1;

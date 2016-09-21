@@ -1,11 +1,11 @@
-package EBiSC::Test::LiveNoCofA;
+package EBiSC::Question::LiveNoClip;
 use Moose;
 use namespace::autoclean;
 use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Marked as go live but no CofA';
+our $title = 'Marked as go live but no CLIP';
 our $description = <<EOF;
 
 * Marked as go live in IMS API
@@ -20,7 +20,7 @@ sub run {
   my $cursor = $self->db->ims_line->c->find(
     {
       'obj.flag_go_live' => boolean::true,
-      'obj.batches.certificate_of_analysis.file' => {'$exists' => boolean::false},
+      'obj.cell_line_information_packs.0' => {'$exists' => boolean::false},
     },
     {'name' => 1},
   );
@@ -32,6 +32,6 @@ sub run {
 
 }
 
-with 'EBiSC::Test::Role::Test';
+with 'EBiSC::Question::Role::Question';
 
 1;

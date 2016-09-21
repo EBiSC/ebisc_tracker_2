@@ -1,4 +1,4 @@
-package EBiSC::Test::Role::Test;
+package EBiSC::Question::Role::Question;
 use Moose::Role;
 use namespace::autoclean;
 use strict;

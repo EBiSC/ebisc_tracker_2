@@ -1,4 +1,4 @@
-package EBiSC::Test::hPSCregIMSAgree::IMSExported;
+package EBiSC::Question::hPSCregIMSAgree::IMSExported;
 use Moose;
 use namespace::autoclean;
 use boolean qw(true false);
@@ -33,6 +33,6 @@ sub run {
 
 }
 
-with 'EBiSC::Test::Role::Test';
+with 'EBiSC::Question::Role::Question';
 
 1;
