@@ -7,8 +7,8 @@ import (
     "flag"
     "github.com/gorilla/mux"
 
-    "tracker/api"
-    "tracker/angular"
+    "ebisc/tracker/api"
+    "ebisc/tracker/angular"
 )
 
 func main() {

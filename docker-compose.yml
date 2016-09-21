@@ -60,7 +60,7 @@ services:
     image: golang
     volumes:
       - $PWD/webserver:/go
-    command: go get tracker
+    command: go get ebisc/tracker
   db_client:
     container_name: ebisc-mongodb-client
     image: centos/mongodb-32-centos7
