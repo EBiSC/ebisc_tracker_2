@@ -16,5 +16,6 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   api.Handle("/exams/latest", &apiHandler{examHandlerFn, session});
   api.Handle("/exams/{date}", &apiHandler{examHandlerFn, session});
   api.Handle("/exams/{date}/fails", &apiHandler{failHandlerFn, session});
+  api.Handle("/exams/{date}/line_fails", &apiHandler{lineFailHandlerFn, session});
   api.PathPrefix("/").Handler(&apiHandler{notFoundHandlerFn, session});
 }
