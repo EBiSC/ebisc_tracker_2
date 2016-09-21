@@ -3,6 +3,7 @@ package api
 import (
     "encoding/json"
     "net/http"
+    "net/url"
     "gopkg.in/mgo.v2"
     "github.com/go-errors/errors"
     "log"
@@ -45,7 +46,7 @@ func newNotFound(m string) *apiError {
 
 type apiContent interface{}
 
-type apiHandlerFn func(map[string]string, *mgo.Session) apiContent
+type apiHandlerFn func(map[string]string, url.Values, *mgo.Session) apiContent
 type apiHandler struct {
   fn apiHandlerFn
   db *mgo.Session
@@ -58,6 +59,7 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   }
   api := r.PathPrefix("/api").Subrouter()
   api.Handle("/test", &apiHandler{testHandlerFn, session});
+  api.Handle("/code_run", &apiHandler{codeRunListHandlerFn, session});
   api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
   api.Handle("/code_run/{date}", &apiHandler{codeRunHandlerFn, session});
 }
@@ -67,9 +69,12 @@ func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   res := new(apiContent)
   defer writeResponse(w, res)
   session := h.db.Copy()
-  vars := mux.Vars(r)
   defer session.Close()
-  *res = h.fn(vars, session)
+  vars := mux.Vars(r)
+  if err := r.ParseForm(); err != nil {
+    panic(newApiError(err, "Form parse error"))
+  }
+  *res = h.fn(vars, r.Form, session)
 }
 
 func writeResponse(w http.ResponseWriter, res *apiContent) {
