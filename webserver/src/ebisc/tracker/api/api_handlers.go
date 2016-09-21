@@ -15,9 +15,9 @@ func testHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *ap
   return newOKRes(res)
 }
 
-func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func examHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
 
-  c := session.DB("ebisc").C("code_run")
+  c := session.DB("ebisc").C("exam")
   m := make(bson.M)
   if dateStr := vars["date"]; len(dateStr) > 0 {
     if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
@@ -36,9 +36,13 @@ func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Sess
     }
   }
 
-  if modules, ok := m["modules"].([]interface{}); ok {
-    for _, module := range modules {
-      expandModule(&module, session)
+  if qSlice, ok := m["questions"].([]interface{}); ok {
+    for _, q := range qSlice {
+      if bsonQ, ok := q.(bson.M); !ok {
+        panic(newApiError("type conversion of Question to a map", "Unexpected json structure"))
+      } else {
+        expandQuestion(bsonQ, session)
+      }
     }
   }
 
@@ -48,28 +52,18 @@ func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Sess
   return newOKRes(m)
 }
 
-func expandModule(m *interface{}, session *mgo.Session) {
-  var oldModule bson.M
-  var ok bool
-  if oldModule, ok = (*m).(bson.M); !ok {
-    panic(newApiError("type conversion of module to a map", "Unexpected json structure"))
-  }
-  expandedModule := make(bson.M)
-  c := session.DB("ebisc").C("test_module")
-  if err := c.Find(bson.M{"module": oldModule["module"]}).One(&expandedModule); err != nil {
+func expandQuestion(q bson.M, session *mgo.Session) {
+  c := session.DB("ebisc").C("question")
+  if err := c.Find(bson.M{"module": q["module"]}).Select(bson.M{"title": 1, "description": 1, "_id": 0}).One(&q); err != nil {
     if (err == mgo.ErrNotFound) {
       return // Not an error
     }
     panic(newApiError(err, "Database find error"))
   }
-  for key, val := range expandedModule {
-    oldModule[key] = val
-  }
-
 }
 
-func codeRunListHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
-  c := session.DB("ebisc").C("code_run")
+func examListHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+  c := session.DB("ebisc").C("exam")
   var query bson.M = nil
   if dateStr := form.Get("date"); len(dateStr) > 0 {
     if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
@@ -86,18 +80,29 @@ func codeRunListHandlerFn(vars map[string]string, form url.Values, session *mgo.
   return newOKRes(m)
 }
 
-func moduleHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
+func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("test_fail")
-  dateStr := form.Get("date")
-  if len(dateStr) == 0 {
+  queryParams := bson.M{};
+
+  if dateStr := form.Get("date"); len(dateStr) == 0 {
     return newBadRequestRes("Date required as a query parameter")
-  }
-  queryParams := bson.M{"module": vars["module"]};
-  if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-    return newBadRequestRes("Date not valid RFC3339Nano")
   } else {
-    queryParams["date"] = date
+    if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
+      return newBadRequestRes("Date not valid RFC3339Nano")
+    } else {
+      queryParams["date"] = date
+    }
   }
+  if str := form.Get("cell_line"); len(str) > 0 {
+    queryParams["cellLine"] = str
+  }
+  if str := form.Get("batch"); len(str) > 0 {
+    queryParams["batch"] = str
+  }
+  if str := form.Get("module"); len(str) > 0 {
+    queryParams["module"] = str
+  }
+
   query := c.Find(queryParams);
   m := bson.M{}
 
@@ -114,21 +119,21 @@ func moduleHandlerFn(vars map[string]string, form url.Values, session *mgo.Sessi
       return newBadRequestRes("skip not a valid integer")
     } else {
       query = query.Skip(skip)
-      m["page_offset"] = skip
+      m["pageOffset"] = skip
     }
   } else {
-    m["page_offset"] = 0
+    m["pageOffset"] = 0
   }
 
   if limitStr := form.Get("limit"); len(limitStr) > 0 {
     if limit, err := strconv.Atoi(limitStr); err != nil{
       return newBadRequestRes("limit not a valid integer")
     } else {
-      m["page_limit"] = limit
+      m["pageLimit"] = limit
       query = query.Limit(limit)
     }
   } else {
-    m["page_limit"] = 100
+    m["pageLimit"] = 100
     query = query.Limit(100)
   }
 
@@ -140,5 +145,4 @@ func moduleHandlerFn(vars map[string]string, form url.Values, session *mgo.Sessi
   m["error"] = false
   return newOKRes(m)
 }
-
 

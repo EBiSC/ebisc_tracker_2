@@ -12,9 +12,9 @@ func AddHandlers(r *mux.Router, dbInfo *Config) {
   }
   api := r.PathPrefix("/api").Subrouter()
   api.Handle("/test", &apiHandler{testHandlerFn, session});
-  api.Handle("/code_run", &apiHandler{codeRunListHandlerFn, session});
-  api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
-  api.Handle("/code_run/{date}", &apiHandler{codeRunHandlerFn, session});
-  api.Handle("/fails/module/{module}", &apiHandler{moduleHandlerFn, session});
+  api.Handle("/exams", &apiHandler{examListHandlerFn, session});
+  api.Handle("/exams/latest", &apiHandler{examHandlerFn, session});
+  api.Handle("/exams/{date}", &apiHandler{examHandlerFn, session});
+  api.Handle("/exams/{date}/fails", &apiHandler{failHandlerFn, session});
   api.PathPrefix("/").Handler(&apiHandler{notFoundHandlerFn, session});
 }
