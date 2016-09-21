@@ -145,62 +145,76 @@ func failHandlerFn(vars map[string]string, form url.Values, session *mgo.Session
 func lineFailHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("question_fail")
   m := bson.M{}
+  var items []interface{}
 
-  var o1 bson.M
+  queryParams := bson.M{}
   if date, err := time.Parse(time.RFC3339Nano, vars["date"]); err != nil {
     return newBadRequestRes("Date not valid RFC3339Nano")
   } else {
-    o1 = bson.M{"$match": bson.M{"date": date}}
+    queryParams["date"] = date
+  }
+  if moduleStr := form.Get("module"); len(moduleStr) > 0 {
+    queryParams["module"] = moduleStr
   }
 
-  o2 := bson.M{
-    "$group": bson.M{"_id": "$cellLine",  "modules": bson.M{"$addToSet": "$module"}},
-  }
-  o3 := bson.M{
-    "$project": bson.M{"cellLine": "$_id", "modules": 1, "count": bson.M{"$size": "$modules"}},
-  }
-  o4 := bson.M{
-    "$sort": bson.D{{"count", 1}, {"cellLine", 1}},
-  }
-
-  var o5 bson.M
+  skip := 0
   if skipStr := form.Get("offset"); len(skipStr) > 0 {
-    if skip, err := strconv.Atoi(skipStr); err != nil{
+    var err error 
+    if skip, err = strconv.Atoi(skipStr); err != nil{
       return newBadRequestRes("skip not a valid integer")
-    } else {
-      m["pageOffset"] = skip
-      o5 = bson.M{"$skip": skip}
     }
-  } else {
-    m["pageOffset"] = 0
-    o5 = bson.M{"$skip": 0}
   }
-
-  var o6 bson.M
+  limit := 100
   if limitStr := form.Get("limit"); len(limitStr) > 0 {
-    if limit, err := strconv.Atoi(limitStr); err != nil{
+    var err error 
+    if limit, err = strconv.Atoi(limitStr); err != nil{
       return newBadRequestRes("limit not a valid integer")
+    }
+  }
+
+  o1 := bson.M{"$match": queryParams}
+
+  oDistinct2 := bson.M{"$group": bson.M{"_id": "$cellLine"}}
+  oDistinct3 := bson.M{"$group": bson.M{"_id": nil, "count": bson.M{"$sum": 1}}}
+  operationsDistinct := []bson.M{o1,oDistinct2, oDistinct3}
+  pipeDistinct := c.Pipe(operationsDistinct)
+  distinct := bson.M{}
+  if err := pipeDistinct.One(&distinct); err != nil {
+    if (err == mgo.ErrNotFound) {
+      m["total"] = 0
     } else {
-      m["pageLimit"] = limit
-      o6 = bson.M{"$limit": limit}
+      panic(newApiError(err, "Database find error"))
     }
   } else {
-    m["pageLimit"] = 100
-    o6 = bson.M{"$limit": 100}
+    m["total"] = distinct["count"]
+
+    o2 := bson.M{
+      "$group": bson.M{"_id": "$cellLine",  "modules": bson.M{"$addToSet": "$module"}},
+    }
+    o3 := bson.M{
+      "$project": bson.M{"cellLine": "$_id", "modules": 1, "count": bson.M{"$size": "$modules"}},
+    }
+    o4 := bson.M{
+      "$sort": bson.D{{"count", 1}, {"cellLine", 1}},
+    }
+    o5 := bson.M{"$skip": skip}
+    o6 := bson.M{"$limit": limit}
+
+    o7 := bson.M{
+      "$project": bson.M{"cellLine": 1, "modules": 1, "_id": 0},
+    }
+
+    operations := []bson.M{o1,o2,o3,o4,o5,o6,o7}
+    pipe := c.Pipe(operations)
+
+    if err := pipe.All(&items); err != nil {
+      panic(newApiError(err, "Database find error"))
+    }
   }
 
-  o7 := bson.M{
-    "$project": bson.M{"cellLine": 1, "modules": 1, "_id": 0},
-  }
-
-  operations := []bson.M{o1,o2,o3,o4,o5,o6,o7}
-  pipe := c.Pipe(operations)
-
-  var items []interface{}
-  if err := pipe.All(&items); err != nil {
-    panic(newApiError(err, "Database find error"))
-  }
   m["items"] = items
+  m["pageLimit"] = limit
+  m["pageOffset"] = skip
   m["error"] = false
   return newOKRes(m)
 }
