@@ -6,26 +6,25 @@ import (
     "time"
     "net/url"
 )
-
-func testHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) apiContent{
+func testHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *apiResponse{
   res := map[string]interface{}{
     "error": false,
     "text": "this is a test",
   }
-  return res
+  return newOKRes(res)
 }
 
-func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) apiContent{
+func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
 
   c := session.DB("ebisc").C("code_run")
   m := make(bson.M)
   if dateStr := vars["date"]; len(dateStr) > 0 {
     if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-      panic(newBadRequest("Date not valid RFC3339Nano"))
+      return newBadRequestRes("Date not valid RFC3339Nano")
     } else {
       if err := c.Find(bson.M{"date": date}).One(&m); err != nil {
         if (err == mgo.ErrNotFound) {
-          panic(newNotFound("Date not found in database"))
+          return newNotFoundRes()
         }
         panic(newApiError(err, "Database find error"))
       }
@@ -45,7 +44,7 @@ func codeRunHandlerFn(vars map[string]string, form url.Values, session *mgo.Sess
   delete(m, "_id")
   m["error"] = false
   
-  return m
+  return newOKRes(m)
 }
 
 func expandModule(m *interface{}, session *mgo.Session) {
@@ -68,12 +67,12 @@ func expandModule(m *interface{}, session *mgo.Session) {
 
 }
 
-func codeRunListHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) apiContent{
+func codeRunListHandlerFn(vars map[string]string, form url.Values, session *mgo.Session) *apiResponse{
   c := session.DB("ebisc").C("code_run")
   var query bson.M = nil
   if dateStr := form.Get("date"); len(dateStr) > 0 {
     if date, err := time.Parse(time.RFC3339Nano, dateStr); err != nil {
-      panic(newBadRequest("Date not valid RFC3339Nano"))
+      return newBadRequestRes("Date not valid RFC3339Nano")
     } else {
       query = bson.M{"date": bson.M{"$lt": date}};
     }
@@ -83,5 +82,5 @@ func codeRunListHandlerFn(vars map[string]string, form url.Values, session *mgo.
     panic(newApiError(err, "Database find error"))
   }
   m := bson.M{"items": items, "error": false}
-  return m
+  return newOKRes(m)
 }

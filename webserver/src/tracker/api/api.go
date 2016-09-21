@@ -15,85 +15,79 @@ type Config mgo.DialInfo
 type apiError struct {
   error *errors.Error
   message string
-  code int
 }
 
 func (e *apiError) Error() string {
-  if (e.error == nil) {
-    return ""
-  }
   return e.error.Error()
 }
 
-func (e *apiError) toApiContent() apiContent {
-  return map[string]interface{}{
-    "error": true,
-    "text": e.message,
-  }
+func newOKRes(c interface{}) *apiResponse{
+  return &apiResponse{c, http.StatusOK}
+}
+
+func newErrorRes(message string, code int) *apiResponse {
+  content := map[string]interface{}{
+        "error": true,
+        "message": message,
+      }
+  return &apiResponse{content, code}
 }
 
 func newApiError(e interface{}, m string) *apiError {
-  return &apiError{errors.Wrap(e, 1), m, http.StatusInternalServerError}
+  return &apiError{errors.Wrap(e, 1), m}
 }
 
-func newBadRequest(m string) *apiError {
-  return &apiError{nil, m, http.StatusBadRequest}
+func newBadRequestRes(m string) *apiResponse {
+  return newErrorRes(m, http.StatusBadRequest)
 }
 
-func newNotFound(m string) *apiError {
-  return &apiError{nil, m, http.StatusNotFound}
+func newNotFoundRes() *apiResponse {
+  return newErrorRes("Not found", http.StatusNotFound)
 }
 
-type apiContent interface{}
+type apiResponse struct {
+  content interface{}
+  code int
+}
 
-type apiHandlerFn func(map[string]string, url.Values, *mgo.Session) apiContent
+type apiHandlerFn func(map[string]string, url.Values, *mgo.Session) *apiResponse
 type apiHandler struct {
   fn apiHandlerFn
   db *mgo.Session
 }
 
-func AddHandlers(r *mux.Router, dbInfo *Config) {
-  session, err := mgo.DialWithInfo((*mgo.DialInfo)(dbInfo))
-  if err != nil {
-    panic(err)
-  }
-  api := r.PathPrefix("/api").Subrouter()
-  api.Handle("/test", &apiHandler{testHandlerFn, session});
-  api.Handle("/code_run", &apiHandler{codeRunListHandlerFn, session});
-  api.Handle("/code_run/latest", &apiHandler{codeRunHandlerFn, session});
-  api.Handle("/code_run/{date}", &apiHandler{codeRunHandlerFn, session});
+func notFoundHandlerFn(vars map[string]string, form url.Values, db *mgo.Session) *apiResponse{
+  return newNotFoundRes()
 }
-
 
 func (h *apiHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  res := new(apiContent)
-  defer writeResponse(w, res)
-  session := h.db.Copy()
-  defer session.Close()
-  vars := mux.Vars(r)
-  if err := r.ParseForm(); err != nil {
-    panic(newApiError(err, "Form parse error"))
+  ch := make(chan *apiResponse)
+  go func() {
+    defer handleError(ch)
+    session := h.db.Copy()
+    defer session.Close()
+    vars := mux.Vars(r)
+    if err := r.ParseForm(); err != nil {
+      panic(newApiError(err, "Form parse error"))
+    }
+    ch <- h.fn(vars, r.Form, session)
+  }()
+  res := <-ch
+  w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+  w.WriteHeader(res.code)
+  if err := json.NewEncoder(w).Encode(res.content); err != nil {
+    panic(err);
   }
-  *res = h.fn(vars, r.Form, session)
 }
 
-func writeResponse(w http.ResponseWriter, res *apiContent) {
-  w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+func handleError(ch chan<- *apiResponse) {
   if r := recover(); r != nil {
     var apiErr *apiError
     var ok bool
     if apiErr, ok = r.(*apiError); !ok {
       apiErr = newApiError(r, "Server error")
     }
-    w.WriteHeader(apiErr.code)
-    if (apiErr.error != nil) {
-      log.Println(apiErr.error.ErrorStack())
-    }
-    *res = apiErr.toApiContent()
-  } else {
-    w.WriteHeader(http.StatusOK)
-  }
-  if err := json.NewEncoder(w).Encode(*res); err != nil {
-    panic(err);
+    log.Println(apiErr.error.ErrorStack())
+    ch <- newErrorRes(apiErr.message, http.StatusInternalServerError)
   }
 }
