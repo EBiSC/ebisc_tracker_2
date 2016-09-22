@@ -46,12 +46,16 @@ func examHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
 }
 
 func expandQuestion(q bson.M, session *mgo.Session) {
-  c := session.DB("ebisc").C("question")
-  if err := c.Find(bson.M{"module": q["module"]}).Select(bson.M{"title": 1, "description": 1, "_id": 0}).One(&q); err != nil {
+  c := session.DB("ebisc").C("question_module")
+  expandedQ := bson.M{}
+  if err := c.Find(bson.M{"module": q["module"]}).Select(bson.M{"title": 1, "description": 1, "_id": 0}).One(expandedQ); err != nil {
     if (err == mgo.ErrNotFound) {
       return // Not an error
     }
     panic(newApiError(err, "Database find error"))
+  }
+  for key, val := range expandedQ {
+    q[key] = val;
   }
 }
 
