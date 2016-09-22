@@ -25,12 +25,13 @@ sub sync_db {
     }
   }
 
-  my $cursor2 = $db->ims_line->c->find({}, {projection => {'obj.biosamples_id' => 1, 'obj.donor.biosamples_id' => 1}});
+  my $cursor2 = $db->ims_line->c->find({}, {projection => {'obj.biosamples_id' => 1, 'obj.donor.biosamples_id' => 1, 'obj.batches.biosamples_id' => 1}});
   while (my $next = $cursor2->next) {
     ID:
     foreach my $id ($next->{obj}{biosamples_id}, $next->{obj}{donor}{biosamples_id}) {
       next ID if !$id || $processed_ids{$id};
       my $obj = $api->get_sample($id);
+      next ID if !$obj;
       my $res = $db->biosample->c->insert_one({
       biosample_id => $id,
       date => $options{now},
@@ -38,7 +39,20 @@ sub sync_db {
       });
       $processed_ids{$id} = 1;
     }
+    ID:
+    foreach my $id (map {$_->{biosamples_id}} @{$next->{obj}{batches}}) {
+      next ID if $processed_ids{$id};
+      my $obj = $api->get_group($id);
+      next ID if !$obj;
+      my $res = $db->biosample_group->c->insert_one({
+      biosample_id => $id,
+      date => $options{now},
+      obj => $obj,
+      });
+      $processed_ids{$id} = 1;
+    }
   }
+
 }
 
 1;

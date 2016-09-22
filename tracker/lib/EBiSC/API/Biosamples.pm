@@ -22,4 +22,17 @@ sub get_sample {
   return $content;
 }
 
+sub get_group {
+  my ($self, $id) = @_;
+  my $url = sprintf('%s/groups/%s', $self->base_url, $id);
+  my $response = $self->ua->get($url);
+  return undef if $response->is_client_error; # implies not found
+  die $response->status_line if $response->is_error;
+  my $content = eval{decode_json($response->content);};
+  if ($@) {
+    die "problem with content from $url\n".$response->content;
+  }
+  return $content;
+}
+
 1;

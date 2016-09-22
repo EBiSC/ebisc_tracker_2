@@ -17,7 +17,7 @@ sub run {
   my ($self) = @_;
 
   my $cursor = $self->db->ims_line->c->find({},
-    {'name' => 1},
+    {projection => {'name' => 1}},
   );
   my $num_tested = 0;
   LINE:

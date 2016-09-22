@@ -4,4 +4,5 @@ requires 'JSON';
 requires 'LWP::UserAgent';
 requires 'LWP::Protocol::https';
 requires 'Time::Moment';
+requires 'Text::Markdown';
 requires 'namespace::autoclean';

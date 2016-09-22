@@ -21,7 +21,7 @@ sub run {
       {'obj.biosamples_id' => {'$exists' => boolean::false}},
       {'obj.donor.biosamples_id' => {'$exists' => boolean::false}},
     ]},
-    {'name' => 1},
+    {projection => {name => 1}},
   );
   foreach my $fail ($cursor->all) {
     $self->add_failed_line(cell_line => $fail->{name});

@@ -1,5 +1,6 @@
 package EBiSC::Utils::Question;
 use Time::Moment;
+use Text::Markdown qw(markdown);
 use strict;
 use warnings;
 use boolean qw(true false);
@@ -8,6 +9,8 @@ our @modules = qw(
   IMSBiosample LiveNoBatches LiveNoClip LiveNoCofA hPSCregBiosample
   hPSCregIMSAgree::BiosampleIDs hPSCregIMSAgree::DonorBiosampleIDs
   hPSCregIMSAgree::IMSExported hPSCregIMSAgree::hPSCregExported
+  Biosamples::LineExported Biosamples::DonorExported
+  Biosamples::BatchExported
 );
 
 sub run_questions {
@@ -53,7 +56,7 @@ sub run_module {
     { '$set' => {
       module => $options{module},
       title => $questioner->title,
-      description => $questioner->description,
+      description => markdown($questioner->description),
     }},
     { upsert => boolean::true},
   );

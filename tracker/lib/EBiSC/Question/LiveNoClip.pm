@@ -22,7 +22,7 @@ sub run {
       'obj.flag_go_live' => boolean::true,
       'obj.cell_line_information_packs.0' => {'$exists' => boolean::false},
     },
-    {'name' => 1},
+    {projection => {name => 1}},
   );
   foreach my $fail ($cursor->all) {
     $self->add_failed_line(cell_line => $fail->{name});
