@@ -26,7 +26,7 @@ sub run {
     foreach my $id ( map {$_->{biosamples_id}} @{$next->{obj}{batches}}) {
       $num_tested += 1;
       my $biosamples_doc = $self->db->biosample_group->c->find_one(
-        {biosample_id => $id}
+        {biosample_id => $id},
         {'biosample_id' => 1},
       );
       next LINE if $biosamples_doc;

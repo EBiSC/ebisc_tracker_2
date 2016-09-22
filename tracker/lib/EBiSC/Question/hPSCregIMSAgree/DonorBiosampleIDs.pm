@@ -19,7 +19,7 @@ sub run {
 
   my $cursor = $self->db->hpscreg_line->c->find(
     {'obj.biosamples_id' => {'$exists' => boolean::true}},
-    {projection => {{'name' => 1, 'obj.biosamples_donor_id' => 1}},
+    {projection => {'name' => 1, 'obj.biosamples_donor_id' => 1}},
   );
   my $num_tested = 0;
   LINE:
