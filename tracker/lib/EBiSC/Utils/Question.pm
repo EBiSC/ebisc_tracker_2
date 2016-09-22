@@ -31,8 +31,8 @@ sub run_questions {
   }
   $options{db}->exam->c->insert({
     date => $options{now},
-    modules => \@results,
-    failed_modules => \@failed_modules,
+    questions => \@results,
+    failedModules => \@failed_modules,
   });
 }
 
