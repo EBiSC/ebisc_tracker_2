@@ -8,6 +8,14 @@ use warnings;
 has 'name' => (is => 'ro', isa => 'Str', default => 'biosample');
 with 'EBiSC::MongoDB::Role::Collection';
 
-1;
+sub ensure_indexes {
+  my ($self) = @_;
+  $self->c->indexes->create_one(
+    ['biosample_id' => 1],
+    {unique => 1},
+  );
+}
 
+__PACKAGE__->meta->make_immutable;
+1;
 
