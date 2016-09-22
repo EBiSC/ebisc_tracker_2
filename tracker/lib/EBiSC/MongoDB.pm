@@ -6,7 +6,7 @@ use strict;
 use warnings;
 
 
-my @collection_classes = qw( hPSCregLine IMSLine Biosample BiosampleGroup QuestionFail CodeRun QuestionModule );
+my @collection_classes = qw( hPSCregLine IMSLine Biosample BiosampleGroup QuestionFail Exam QuestionModule );
 
 has 'client' => (is => 'rw', isa => 'MongoDB::MongoClient', builder => '_build_client', lazy => 1);
 has 'db' => (is => 'rw', isa => 'MongoDB::Database', builder => '_build_db', lazy => 1);

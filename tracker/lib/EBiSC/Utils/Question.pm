@@ -29,7 +29,7 @@ sub run_questions {
       push(@failed_modules, $module);
     }
   }
-  $options{db}->code_run->c->insert({
+  $options{db}->exam->c->insert({
     date => $options{now},
     modules => \@results,
     failed_modules => \@failed_modules,

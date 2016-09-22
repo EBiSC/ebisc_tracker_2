@@ -1,10 +1,10 @@
-package EBiSC::MongoDB::CodeRun;
+package EBiSC::MongoDB::Exam;
 use Moose;
 use namespace::autoclean;
 use strict;
 use warnings;
 
-has 'name' => (is => 'ro', isa => 'Str', default => 'code_run');
+has 'name' => (is => 'ro', isa => 'Str', default => 'exam');
 with 'EBiSC::MongoDB::Role::Collection';
 
 sub ensure_indexes {
