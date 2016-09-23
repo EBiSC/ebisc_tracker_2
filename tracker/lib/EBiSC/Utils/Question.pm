@@ -10,7 +10,8 @@ our @modules = qw(
   hPSCregIMSAgree::BiosampleIDs hPSCregIMSAgree::DonorBiosampleIDs
   hPSCregIMSAgree::IMSExported hPSCregIMSAgree::hPSCregExported
   Biosamples::LineExported Biosamples::DonorExported
-  Biosamples::BatchExported Biosamples::OriginCellLine Biosamples::OriginDonor
+  Biosamples::BatchExported Biosamples::OriginCellLine
+  Biosamples::OriginDonor Biosamples::VialDerivedFrom
 );
 
 sub run_questions {

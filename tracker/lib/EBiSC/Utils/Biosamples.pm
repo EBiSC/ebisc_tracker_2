@@ -8,6 +8,7 @@ sub sync_db {
   my $db = $options{db};
   $options{now} //= Time::Moment->now_utc;
   $db->biosample->reset;
+  $db->biosample_group->reset;
 
   my %processed_ids;
   my $cursor1 = $db->hpscreg_line->c->find({}, {projection => {'obj.biosamples_id' => 1, 'obj.biosamples_donor_id' => 1}});
@@ -44,12 +45,23 @@ sub sync_db {
       next ID if $processed_ids{$id};
       my $obj = $api->get_group($id);
       next ID if !$obj;
+
+      my $vial_derived_from = undef;
+      if (my $vial_id = $obj->{samples} && $obj->{samples}[0]) {
+        if (my $vial = $api->get_sample($vial_id)) {
+          $vial_derived_from = $vial->{characteristics}{derived_from} && $vial->{characteristics}{derived_from}[0]{text};
+        }
+      }
+
       my $res = $db->biosample_group->c->insert_one({
       biosample_id => $id,
       date => $options{now},
+      vial_derived_from => $vial_derived_from,
       obj => $obj,
       });
       $processed_ids{$id} = 1;
+
+      
     }
   }
 
