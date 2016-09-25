@@ -16,7 +16,7 @@ export class AppComponent implements OnInit{
     this.apiService.getExam('latest')
       .subscribe(
         exam => this.exam = exam,
-        err => this.error = err
+        err => this.error = err.message
       );
   }
 }

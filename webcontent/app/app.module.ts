@@ -6,7 +6,7 @@ import { AppComponent }  from './app.component';
 import { ApiService }  from './api.service';
 
 @NgModule({
-  imports: [ BrowserModule ],
+  imports: [ BrowserModule, HttpModule ],
   declarations: [ AppComponent ],
   providers: [ ApiService],
   bootstrap: [ AppComponent ]
