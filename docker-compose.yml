@@ -44,7 +44,7 @@ services:
       - ebisc
     volumes:
       - $PWD/webserver:/go
-      - $PWD/webcontent:/usr/src/myapp
+      - $PWD/webcontent/webroot:/usr/src/myapp
     environment:
       - MONGODB_HOST=mongodb
       - MONGODB_PASS=ebisc
@@ -71,6 +71,14 @@ services:
     command: mongo -u ebisc -p ebisc mongodb/ebisc
     depends_on:
       - mongodb
+  npm:
+    container_name: npm
+    image: node:slim
+    entrypoint: npm
+    command: install --unsafe-perm
+    volumes:
+      - $PWD/webcontent:/usr/src/app
+    working_dir: /usr/src/app
 networks:
   ebisc:
     external: true
