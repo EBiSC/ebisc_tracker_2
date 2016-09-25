@@ -3,7 +3,7 @@ import { ApiService} from './api.service'
 
 @Component({
     selector: 'my-app',
-    template: '<h1>My First Angular App</h1>',
+    template: '<tracker-exam [exam]="exam"></tracker-exam>',
     providers: [ ApiService ]
 })
 export class AppComponent implements OnInit{ 
