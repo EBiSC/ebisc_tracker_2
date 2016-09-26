@@ -3,7 +3,7 @@ import { ApiService} from './api.service'
 
 @Component({
     selector: 'my-app',
-    templateUrl: './api.component.html',
+    templateUrl: './app.component.html',
     providers: [ ApiService ]
 })
 export class AppComponent implements OnInit{ 
