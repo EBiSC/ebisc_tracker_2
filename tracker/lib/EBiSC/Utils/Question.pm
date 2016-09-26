@@ -71,8 +71,8 @@ sub run_module {
   }
 
   return {
-    num_tested => $questioner->num_tested,
-    num_failed => $questioner->num_failed,
+    numTested => $questioner->num_tested,
+    numFailed => $questioner->num_failed,
   };
 
 }
