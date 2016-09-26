@@ -15,8 +15,8 @@ export class AppComponent implements OnInit{
   ngOnInit(): void {
     this.apiService.getExam('latest')
       .subscribe(
-        exam => this.exam = exam,
-        err => this.error = err.message
+        exam => {this.exam = exam; this.error = null},
+        err => this.error = err
       );
   }
 }

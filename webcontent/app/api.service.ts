@@ -14,9 +14,14 @@ export class ApiService {
       .catch((error:any) => this.handleError(error))
   }
 
-  private handleError(error: any): Observable<{[key:string]: any}> {
+  private handleError(error: any) {
     console.error('An error occurred', error); // for demo purposes only
-    return Observable.throw(error.json() || {message: 'API Error'})
+    let json = error.json()
+    let errMsg = json && json['message'] ? json['message']
+               : error.message ? error.message
+               : error.status ? `API error: ${error.status} - ${error.statusText}`
+               : 'API error'
+    return Observable.throw(errMsg)
   }
 
 }
