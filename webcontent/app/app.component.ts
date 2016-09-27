@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService} from './api.service'
+import { ApiExamService } from './common/services/api-exam.service'
+
+import { Exam } from './common/exam'
 
 @Component({
     selector: 'my-app',
     templateUrl: './app.component.html',
-    providers: [ ApiService ]
+    providers: [ ApiExamService ]
 })
 export class AppComponent implements OnInit{ 
   error: string;
-  exam: {[key:string]: any} = {};
+  exam: Exam = null;
 
-  constructor( private apiService: ApiService) {}
+  constructor( private apiExamService: ApiExamService) {}
 
   ngOnInit(): void {
-    this.apiService.getExam('latest')
+    this.apiExamService.getExam('latest')
       .subscribe(
         exam => {this.exam = exam; this.error = null},
         err => this.error = err

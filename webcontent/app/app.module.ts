@@ -4,12 +4,13 @@ import { HttpModule }    from '@angular/http';
 
 import { AppComponent }  from './app.component';
 import { ExamComponent }  from './exam.component';
-import { ApiService }  from './api.service';
+import { ApiExamService }  from './common/services/api-exam.service';
+import { DateResolveService }  from './common/services/date-resolve.service';
 
 @NgModule({
   imports: [ BrowserModule, HttpModule ],
   declarations: [ AppComponent, ExamComponent ],
-  providers: [ ApiService],
+  providers: [ ApiExamService, DateResolveService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
