@@ -5,6 +5,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
 import { Exam } from '../exam';
+import { ApiErrorService } from './api-error.service';
 
 @Injectable()
 export class ApiExamService {
@@ -14,12 +15,12 @@ export class ApiExamService {
   private examObservables: {[date:string]: Observable<Exam>} = {}
   private validDates: {[date:string]: boolean} = {}
 
-  constructor(private http: Http) { }
+  constructor(private http: Http, private apiErrorService: ApiErrorService) { }
 
   // public methods
 
   getExam(date: string): Observable<Exam>{
-    return this._getExam(date).catch(this.handleError);
+    return this._getExam(date).catch(this.apiErrorService.catchError);
   }
 
   queryValidDate(date: string): Observable<boolean> {
@@ -72,16 +73,6 @@ export class ApiExamService {
       this.addValidDate(date, false);
     }
     return Observable.throw<Exam>(error);
-  }
-
-  private handleError(error: any): Observable<Exam> {
-    console.error('An error occurred', error); // for demo purposes only
-    let json = error.json()
-    let errMsg = json && json['message'] ? json['message']
-               : error.message ? error.message
-               : error.status ? `API error: ${error.status} - ${error.statusText}`
-               : 'API error'
-    return Observable.throw<Exam>(errMsg)
   }
 
 }

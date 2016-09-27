@@ -1,0 +1,6 @@
+<div class="alert alert-danger" role="alert" *ngIf="errors.length">
+  <button (click)="dissmiss()" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <p><strong>Something went wrong:</strong></p>
+  <p *ngFor="let error of errors">{{error}}</p>
+  <a (click)="refresh()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> <strong>Click to refresh</strong></a>
+</div>
