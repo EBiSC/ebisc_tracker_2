@@ -10,13 +10,12 @@ import { routing, appRoutingProviders} from './app.routing';
 import { QuestionsModule }  from './questions/questions.module';
 
 import { ApiExamService }  from './common/services/api-exam.service';
-import { DateResolveService }  from './common/services/date-resolve.service';
 import { ApiErrorService }  from './common/services/api-error.service';
 
 @NgModule({
   imports: [ BrowserModule, HttpModule, routing, QuestionsModule ],
   declarations: [ AppComponent, PageNotFoundComponent, ApiErrorComponent ],
-  providers: [ ApiExamService, DateResolveService, ApiErrorService, appRoutingProviders ],
+  providers: [ ApiExamService, ApiErrorService, appRoutingProviders ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute} from '@angular/router';
+import { Router } from '@angular/router';
 
-import { ApiErrorService } from './common/services/api-error.service'
+import { ApiErrorService } from './common/services/api-error.service';
+import { ApiErrorHandle } from './common/api-error-handle';
 
 @Component({
     selector: 'api-error',
@@ -10,26 +11,32 @@ import { ApiErrorService } from './common/services/api-error.service'
 })
 export class ApiErrorComponent implements OnInit{
 
-  errors: string[] = [];
+  errors: ApiErrorHandle[] = [];
 
   constructor(
     private apiErrorService: ApiErrorService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
   ) {};
 
   ngOnInit(): void {
-    this.apiErrorService.getObservable().subscribe((error:string) => this.errors.push(error));
+    this.apiErrorService.getObservable()
+        .subscribe((handle:ApiErrorHandle) => this.errors.push(handle));
+    this.router.events.subscribe((value:any):void => this.dismiss());
     return;
   };
 
-  refresh(): void {
-    this.dismiss();
-    this.router.navigateByUrl(this.activatedRoute.snapshot.toString(), {replaceUrl: true});
+  retry(): void {
+    for (let handle of this.errors) {
+      handle.retry();
+    }
+    this.errors = [];
     return;
   };
 
   dismiss(): void {
+    for (let handle of this.errors) {
+      handle.dismiss();
+    }
     this.errors = [];
     return;
   }
