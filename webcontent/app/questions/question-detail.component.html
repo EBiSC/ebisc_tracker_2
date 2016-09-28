@@ -6,7 +6,19 @@
 
 <p>This current view shows you details of your <strong>chosen question</strong> that got asked at a certain <strong>point in time</strong></p>
 
-<h2>{{question?.title}}</h2>
+<h1 class="text-center">{{question?.title}}</h1>
+
+<div class="row">
+  <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-1 text-center"
+    [ngClass]="{'bg-danger': question?.numFailed, 'bg-success': !question?.numFailed }">
+    <h3>How many failed?</h3>
+    <h3>{{question?.numFailed}}</h3>
+  </div>
+  <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 bg-info text-center">
+    <h3>How many were tested?</h3>
+    <h3>{{question?.numTested}}</h3>
+  </div>
+</div>
 
 <dl class="dl-horizontal">
   <dt>Point in time:</dt>
@@ -14,12 +26,6 @@
 
   <dt>Question asked:</dt>
   <dd>{{question?.title}}</dd>
-
-  <dt>How many failed?</dt>
-  <dd>{{question?.numFailed}}</dd>
-
-  <dt>How many were tested?</dt>
-  <dd>{{question?.numTested}}</dd>
 
   <dt>Question module:</dt>
   <dd>{{questionModule}}</dd>
