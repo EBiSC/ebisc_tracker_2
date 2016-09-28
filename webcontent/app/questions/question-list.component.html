@@ -1,0 +1,34 @@
+<ol class="breadcrumb">
+  <li><a routerLink="/">Home</a></li>
+  <li class="active">Questions</li>
+</ol>
+
+<p>This current view shows you details of <strong>all questions</strong> that got asked at a certain <strong>point in time</strong>. Click on any question for a more detailed breakdown.</p>
+
+<h1 class="text-center">Questions asked at {{date}}</h1>
+
+<div class="panel-group" role="tablist" aria-multiselectable="true">
+<div *ngFor="let question of exam?.questions" class="panel panel-default"
+      [ngClass]="{'panel-danger': question.numFailed }">
+<div class="panel-heading clickable" (click)="uncollapsed[question.module] = !uncollapsed[question.module]">
+  <h2 class="panel-title">{{question.title}} <span *ngIf="question.numFailed" class="fails-badge">{{question.numFailed}} fails</span></h2>
+</div>
+<div class="panel-collapse" role="tabpanel" [ngClass]="{'collapse': !uncollapsed[question.module]}">
+<div class="panel-body clickable" [routerLink]="['/question', question.module]">
+  <h3 class="text-center">Click again for a full breakdown</h3>
+  <div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-1 text-center">
+      <h3>How many failed?</h3>
+      <h3>{{question?.numFailed}}</h3>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 text-center">
+      <h3>How many were tested?</h3>
+      <h3>{{question?.numTested}}</h3>
+    </div>
+  </div>
+  <p>Question asked at {{date}}</p>
+  <div [innerHtml]="question.description"></div>
+</div>
+</div>
+</div>
+</div>
