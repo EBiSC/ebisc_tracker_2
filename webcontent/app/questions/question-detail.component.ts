@@ -3,6 +3,7 @@ import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { Exam } from '../common/exam';
+import { Question } from '../common/question';
 import { RouteExamService } from '../common/services/route-exam.service';
 import { RouteDateService } from '../common/services/route-date.service';
 
@@ -13,6 +14,7 @@ export class QuestionDetailComponent implements OnInit, OnDestroy{
 
   // public properties
   questionModule: string = null;
+  question: Question;
   date: string = null;
   exam: Exam;
 
@@ -28,7 +30,20 @@ export class QuestionDetailComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.examSubscription =
-      this.routeExamService.exam$.subscribe((exam:Exam) => this.exam = exam);
+      this.routeExamService.exam$.subscribe((exam:Exam) => {
+        this.exam = exam;
+        if (exam) {
+          for (let question of exam.questions) {
+            if (question.module == this.activatedRoute.snapshot.params['qModule']) {
+              this.question = question;
+              break;
+            }
+          }
+        }
+        else {
+          this.question = null;
+        }
+    });
     this.dateSubscription =
       this.routeDateService.date$.subscribe((date:string) => {
         this.questionModule = this.activatedRoute.snapshot.params['qModule'];
