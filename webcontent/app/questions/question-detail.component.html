@@ -1,3 +1,31 @@
-<p>Current module is {{questionModule}}</p>
-<p>Current date is {{date}}</p>
-<p>{{question?.title}}</p>
+<ol class="breadcrumb">
+  <li><a href="#">Home</a></li>
+  <li><a href="#">Questions</a></li>
+  <li><a href="#">{{questionModule}}</a></li>
+</ol>
+
+<p>This current view shows you details of your <strong>chosen question</strong> that got asked at a certain <strong>point in time</strong></p>
+
+<h2>{{question?.title}}</h2>
+
+<dl class="dl-horizontal">
+  <dt>Point in time:</dt>
+  <dd>{{date}}</dd>
+
+  <dt>Question asked:</dt>
+  <dd>{{question?.title}}</dd>
+
+  <dt>How many failed?</dt>
+  <dd>{{question?.numFailed}}</dd>
+
+  <dt>How many were tested?</dt>
+  <dd>{{question?.numTested}}</dd>
+
+  <dt>Question module:</dt>
+  <dd>{{questionModule}}</dd>
+</dl>
+
+<div *ngIf="question?.description" class="panel panel-default" >
+<div class="panel-heading">Description of the question asked</div>
+<div [innerHtml]="question?.description" class="panel-body"></div>
+</div>
