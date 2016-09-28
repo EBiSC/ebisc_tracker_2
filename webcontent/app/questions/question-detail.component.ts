@@ -1,32 +1,47 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from'@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from'@angular/router';
+import { Subscription } from 'rxjs/Subscription';
 
 import { Exam } from '../common/exam';
-import { ExamObservableService } from '../common/services/exam-observable.service';
+import { RouteExamService } from '../common/services/route-exam.service';
+import { RouteDateService } from '../common/services/route-date.service';
 
 @Component({
     templateUrl: './question-detail.component.html'
 })
-export class QuestionDetailComponent implements OnInit{
+export class QuestionDetailComponent implements OnInit, OnDestroy{
 
+  // public properties
   questionModule: string = null;
   date: string = null;
   exam: Exam;
+
+  // private properties
+  private examSubscription: Subscription = null;
+  private dateSubscription: Subscription = null;
   
   constructor(
     private activatedRoute: ActivatedRoute,
-    private examObservableService: ExamObservableService,
+    private routeExamService: RouteExamService,
+    private routeDateService: RouteDateService,
   ){};
 
-  getDate(): string {
-    return this.date || this.exam ? this.exam.date : null;
-  }
-
   ngOnInit() {
-    this.examObservableService.exam$.subscribe((exam:Exam) => this.exam = exam);
-    this.activatedRoute.params.forEach((params: Params) => {
-      this.questionModule = params['qModule'];
-      this.date = params['date'];
-    });
+    this.examSubscription =
+      this.routeExamService.exam$.subscribe((exam:Exam) => this.exam = exam);
+    this.dateSubscription =
+      this.routeDateService.date$.subscribe((date:string) => {
+        this.questionModule = this.activatedRoute.snapshot.params['qModule'];
+        this.date = date;
+      });
+  };
+
+  ngOnDestroy() {
+    if (this.examSubscription) {
+      this.examSubscription.unsubscribe();
+    }
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
   }
 };

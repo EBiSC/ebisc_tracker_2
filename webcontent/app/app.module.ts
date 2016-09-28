@@ -11,12 +11,13 @@ import { QuestionsModule }  from './questions/questions.module';
 
 import { ApiExamService }  from './common/services/api-exam.service';
 import { ApiErrorService }  from './common/services/api-error.service';
-import { ExamObservableService }  from './common/services/exam-observable.service';
+import { RouteExamService }  from './common/services/route-exam.service';
+import { RouteDateService }  from './common/services/route-date.service';
 
 @NgModule({
   imports: [ BrowserModule, HttpModule, routing, QuestionsModule ],
   declarations: [ AppComponent, PageNotFoundComponent, ApiErrorComponent ],
-  providers: [ ApiExamService, ApiErrorService, ExamObservableService, appRoutingProviders ],
+  providers: [ ApiExamService, ApiErrorService, RouteExamService, RouteDateService, appRoutingProviders ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
