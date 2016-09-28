@@ -5,11 +5,14 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Batch Biosample ID in IMS is exported by Biosamples';
+our $title = 'Does Biosamples export all batch IDs found in IMS?';
 our $description = <<EOF;
 
-* Batch is listed in for a cell line in the IMS API
-* Biosamples exports that biosample in its API
+A batch is tested if it is listed for a cell line in the IMS API
+
+Requirements to pass:
+
+Biosamples exports that batch biosample in its API
 
 EOF
 

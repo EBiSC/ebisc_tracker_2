@@ -5,12 +5,18 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'hPSCreg has biosample IDs for cell line';
+our $title = 'Does hPSCreg have biosample IDs for all cell lines?';
 our $description = <<EOF;
+
+A cell line is tested if...
 
 * Exported by hPSCreg API
 * Marked as submitted in hPSCreg API
-* Biosample ID or donor biosample ID is missing from hPSCreg API
+
+Requirements to pass:
+
+* Biosample ID is present for the cell line in hPSCreg
+* Donor biosample ID is present for the cell line in hPSCreg
 
 EOF
 

@@ -5,11 +5,14 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Line is not exported by hPSCreg';
+our $title = 'Does hPSCreg export all cell lines exported by IMS?';
 our $description = <<EOF;
 
-* Exported by IMS API
-* Not exported by hPSCreg API
+A cell line is tested if it is exported by IMS API
+
+Requirements to pass:
+
+Cell line is exported by hPSCreg API
 
 EOF
 

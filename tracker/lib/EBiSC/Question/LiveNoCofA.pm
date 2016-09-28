@@ -5,11 +5,17 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Marked as go live but no CofA';
+our $title = 'Do all "go live" cell lines have a CofA in IMS?';
 our $description = <<EOF;
 
-* Marked as go live in IMS API
-* Does not have a CLIP
+A cell line is tested if...
+
+* If line is exported by the IMS API
+* ...and if that line is marked as "go live"
+
+Requirements to pass:
+
+* The cell line has a certificate of analysis file listed in the IMS
 
 EOF
 

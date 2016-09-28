@@ -5,11 +5,15 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'IMS has biosample IDs for cell line';
+our $title = 'Does the IMS have biosample IDs for all cell lines?';
 our $description = <<EOF;
 
-* Exported by IMS API
-* Biosample ID or donor biosample ID is missing from IMS API
+A cell line is tested if it is exported by the IMS API
+
+Requirements to pass:
+
+* Biosample ID is present for the cell line
+* Donor biosample ID is present for the cell line
 
 EOF
 

@@ -5,12 +5,17 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Cell line Biosample ID does not match between IMS and hPSCreg';
+our $title = 'Does cell line Biosample ID always match between IMS and hPSCreg?';
 our $description = <<EOF;
 
-* hPSCreg API exports a biosample ID for the line
-* IMS API exports a biosample ID for the line
-* Cell line biosample IDs do not match between IMS and hPSCreg
+A cell line is tested if...
+
+* If hPSCreg API exports a biosample ID for the line
+* ...and if IMS API exports a biosample ID for the line
+
+Requirements to pass:
+
+* Cell line biosample ID in IMS matches cell line biosample ID in hPSCreg
 
 EOF
 

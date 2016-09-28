@@ -5,11 +5,17 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Donor Biosample ID in hPSCreg is exported by Biosamples';
+our $title = 'Does Biosamples export all donor IDs found in hPSCreg?';
 our $description = <<EOF;
 
-* hPSCreg API exports a donor biosample ID for the line
-* Biosamples exports that biosample in its API
+A cell line is tested if...
+
+* If cell line is exported by hPSCreg API
+* ...and if hPSCreg lists a donor ID for that cell line
+
+Requirements to pass:
+
+Biosamples exports that donor biosample in its API
 
 EOF
 

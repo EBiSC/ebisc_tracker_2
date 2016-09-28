@@ -5,13 +5,18 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Origin cell line exported by biosamples batch is consistent with IMS cell line';
+our $title = 'Is batch "Origin cell line" in Biosamples always consistent with the IMS cell line?';
 our $description = <<EOF;
 
-* Tested if batch is listed for a cell line in the IMS API
-* Tested if batch is exported by Biosamples API
-* Tested if IMS has a cell line biosample id
-* Passes if "origin cell line" tag in Biosamples matches cell line name in IMS
+A batch is tested if...
+
+* If batch is listed for a cell line in the IMS API
+* ...and if batch is exported by Biosamples API
+* ...and if IMS has a cell line biosample id
+
+Requirements to pass:
+
+Passes if "origin cell line" tag in Biosamples matches cell line biosamples id in IMS
 
 EOF
 

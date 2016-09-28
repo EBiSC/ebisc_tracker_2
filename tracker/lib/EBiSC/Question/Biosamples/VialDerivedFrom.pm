@@ -5,17 +5,20 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Vial in batch has "derived from" tag that that matches the batch "origin cell line" tag';
+our $title = 'Do all batches have a vial with "derived from" tag that that matches the batch\'s "origin cell line" tag?';
 our $description = <<EOF;
 
-* Tested if batch is listed for a cell line in the IMS API
-* Tested if batch is exported by Biosamples API
-* Tested if batch has a "origin cell line" tag
+A batch is tested if...
+
+* If batch is listed for a cell line in the IMS API
+* ...and if that batch is exported by Biosamples API
+* ...and if that batch in Biosamples has a "origin cell line" tag 
 
 Requirements to pass:
+
 * First vial in the batch is exported by biosamples
 * That vial has a "derived from" characteristic
-* Vial is derived from a biosample_id that matches the "origin cell line" tag
+* Vial is derived from a biosample_id that matches the "origin cell line" tag of the batch
 
 EOF
 
