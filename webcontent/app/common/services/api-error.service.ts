@@ -27,10 +27,7 @@ export class ApiErrorService {
   // private methods
   private subscribe(o: Observable<Response>, s: BehaviorSubject<Response>, dismissFn?: () => any): void {
     o.subscribe(
-      (res: Response) => {
-        s.next(res);
-        s.complete();
-      },
+      (res: Response) => s.next(res),
       (error: any) => {
         console.error('An error occurred', error); // for demo purposes only
         let json = error.json()
