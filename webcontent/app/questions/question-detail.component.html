@@ -38,9 +38,10 @@
 
 <table class="table table-striped table-hover table-responsive">
 <thead><tr>
-  <th>Cell line</th><th>Batch</th>
+  <th></th><th>Cell line</th><th>Batch</th>
 </tr></thead>
 <tbody><tr *ngFor="let fail of failList?.items">
+<td>{{index + failsOffset}}</td>
 <td>{{fail.cellLine}}</td><td>{{fail.batch || 'N/A'}}</td>
 </tr></tbody>
 </table>

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
 import { Observable }       from 'rxjs/Observable';
-import { Observer }       from 'rxjs/Observer';
+import { BehaviorSubject }       from 'rxjs/BehaviorSubject';
 import { Subject }          from 'rxjs/Subject';
+import 'rxjs/add/operator/filter';
 
 import { ApiErrorHandle } from '../api-error-handle';
 
@@ -18,13 +19,13 @@ export class ApiErrorService {
   }
 
   handleError(o: Observable<Response>, dismissFn?: () => any): Observable<Response> {
-    let s = new Subject<Response>();
+    let s = new BehaviorSubject<Response>(null);
     this.subscribe(o, s, dismissFn);
-    return s.asObservable();
+    return s.asObservable().filter((r:Response):boolean => r ? true : false);
   };
 
   // private methods
-  private subscribe(o: Observable<Response>, s: Subject<Response>, dismissFn?: () => any): void {
+  private subscribe(o: Observable<Response>, s: BehaviorSubject<Response>, dismissFn?: () => any): void {
     o.subscribe(
       (res: Response) => s.next(res),
       (error: any) => {
