@@ -5,7 +5,7 @@
 
 <p>This current view shows you details of <strong>all questions</strong> that got asked at a certain <strong>point in time</strong>. Click on any question for a more detailed breakdown.</p>
 
-<h1 class="text-center">Questions asked at {{date}}</h1>
+<h1 class="text-center">Questions asked at {{date | prettyDate}}</h1>
 
 <div class="panel-group" role="tablist" aria-multiselectable="true">
 <div *ngFor="let question of exam?.questions" class="panel panel-default"

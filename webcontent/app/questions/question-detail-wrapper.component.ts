@@ -5,9 +5,9 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/do';
 
-import { Exam } from '../common/exam';
-import { RouteExamService } from '../common/services/route-exam.service';
-import { RouteDateService } from '../common/services/route-date.service';
+import { Exam } from '../shared/exam';
+import { RouteExamService } from '../core/services/route-exam.service';
+import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
     templateUrl: './question-detail-wrapper.component.html',

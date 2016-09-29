@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ApiErrorService } from './common/services/api-error.service';
-import { ApiErrorHandle } from './common/api-error-handle';
+import { ApiErrorService } from './core/services/api-error.service';
+import { ApiErrorHandle } from './core/api-error-handle';
 
 @Component({
     selector: 'api-error',

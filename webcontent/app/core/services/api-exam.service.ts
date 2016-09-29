@@ -3,7 +3,7 @@ import { Http, Response } from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 
-import { Exam } from '../exam';
+import { Exam } from '../../shared/exam';
 import { ApiErrorService } from './api-error.service';
 
 @Injectable()

@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
-import { Exam } from '../common/exam';
-import { RouteExamService } from '../common/services/route-exam.service';
-import { RouteDateService } from '../common/services/route-date.service';
+import { Exam } from '../shared/exam';
+import { RouteExamService } from '../core/services/route-exam.service';
+import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
     templateUrl: './question-list.component.html',
-    styleUrls: ['../common/css/common.css', './question-list.component.css'],
+    styleUrls: ['../shared/css/shared.css', './question-list.component.css'],
 })
 export class QuestionListComponent implements OnInit, OnDestroy{
 

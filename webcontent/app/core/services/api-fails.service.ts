@@ -3,7 +3,7 @@ import { Http, Response, URLSearchParams } from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 
-import { FailList } from '../fail-list';
+import { FailList } from '../../shared/fail-list';
 import { ApiErrorService } from './api-error.service';
 
 @Injectable()

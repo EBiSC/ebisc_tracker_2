@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from'@angular/router';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/switchMap';
 
-import { Exam } from '../exam';
+import { Exam } from '../../shared/exam';
 import { ApiExamService } from './api-exam.service';
 
 @Injectable()
