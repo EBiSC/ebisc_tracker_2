@@ -40,8 +40,8 @@
 <thead><tr>
   <th></th><th>Cell line</th><th>Batch</th>
 </tr></thead>
-<tbody><tr *ngFor="let fail of failList?.items">
-<td>{{index + failsOffset}}</td>
+<tbody><tr *ngFor="let fail of failList?.items; let i=index;">
+<td>{{i + failsOffset +1}}</td>
 <td>{{fail.cellLine}}</td><td>{{fail.batch || 'N/A'}}</td>
 </tr></tbody>
 </table>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
 import { Observable }       from 'rxjs/Observable';
-import { BehaviorSubject }       from 'rxjs/BehaviorSubject';
+import { ReplaySubject }       from 'rxjs/ReplaySubject';
 import { Subject }          from 'rxjs/Subject';
 import 'rxjs/add/operator/filter';
 
@@ -19,15 +19,18 @@ export class ApiErrorService {
   }
 
   handleError(o: Observable<Response>, dismissFn?: () => any): Observable<Response> {
-    let s = new BehaviorSubject<Response>(null);
+    let s = new ReplaySubject<Response>(1);
     this.subscribe(o, s, dismissFn);
-    return s.asObservable().filter((r:Response):boolean => r ? true : false);
+    return s.asObservable();
   };
 
   // private methods
-  private subscribe(o: Observable<Response>, s: BehaviorSubject<Response>, dismissFn?: () => any): void {
+  private subscribe(o: Observable<Response>, s: ReplaySubject<Response>, dismissFn?: () => any): void {
     o.subscribe(
-      (res: Response) => s.next(res),
+      (res: Response) => {
+        s.next(res);
+        s.complete();
+      },
       (error: any) => {
         console.error('An error occurred', error); // for demo purposes only
         let json = error.json()

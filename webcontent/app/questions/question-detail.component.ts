@@ -1,8 +1,9 @@
 import { Component, OnChanges, OnInit, OnDestroy, SimpleChanges, Input } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/do';
 
 import { Exam } from '../common/exam';
 import { Fail } from '../common/fail';
@@ -31,20 +32,19 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
   failsOffset: number = 0;
 
   // private properties
-  private failListSource: Subject<Observable<FailList>>;
+  private failListSource: BehaviorSubject<Observable<FailList>>;
   private failListSubscription: Subscription;
 
   constructor(
     private apiFailsService: ApiFailsService,
   ){ 
-    this.failListSource = new Subject<Observable<FailList>>();
+    this.failListSource = new BehaviorSubject<Observable<FailList>>(null);
   };
 
   ngOnInit() {
     this.failListSubscription = this.failListSource
         .switchMap((o: Observable<FailList>):Observable<FailList> => o)
         .subscribe((f:FailList) => this.failList = f );
-    this.getFailList();
   };
 
   ngOnDestroy() {
@@ -91,7 +91,7 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
   }
   tablePrevious() {
     if (this.failList && this.failList.items) {
-      this.failsOffset -= this.failsOffset >= this.failList.pageLimit ? this.failsOffset - this.failList.pageLimit : 0;
+      this.failsOffset = (this.failsOffset >= this.failList.pageLimit) ? this.failsOffset - this.failList.pageLimit : 0;
       this.getFailList();
     }
   }
