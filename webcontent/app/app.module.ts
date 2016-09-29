@@ -10,6 +10,7 @@ import { routing, appRoutingProviders} from './app.routing';
 import { QuestionsModule }  from './questions/questions.module';
 
 import { ApiExamService }  from './common/services/api-exam.service';
+import { ApiFailsService }  from './common/services/api-fails.service';
 import { ApiErrorService }  from './common/services/api-error.service';
 import { RouteExamService }  from './common/services/route-exam.service';
 import { RouteDateService }  from './common/services/route-date.service';
@@ -17,7 +18,7 @@ import { RouteDateService }  from './common/services/route-date.service';
 @NgModule({
   imports: [ BrowserModule, HttpModule, routing, QuestionsModule ],
   declarations: [ AppComponent, PageNotFoundComponent, ApiErrorComponent ],
-  providers: [ ApiExamService, ApiErrorService, RouteExamService, RouteDateService, appRoutingProviders ],
+  providers: [ ApiExamService, ApiFailsService, ApiErrorService, RouteExamService, RouteDateService, appRoutingProviders ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
