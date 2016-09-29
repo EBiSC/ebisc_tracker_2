@@ -14,20 +14,9 @@
   <h2 class="panel-title">{{question.title}} <span *ngIf="question.numFailed" class="fails-badge">{{question.numFailed}} fails</span></h2>
 </div>
 <div class="panel-collapse" role="tabpanel" [ngClass]="{'collapse': !uncollapsed[question.module]}">
-<div class="panel-body clickable" [routerLink]="['/question', question.module]">
-  <h3 class="text-center">Click again for a full breakdown</h3>
-  <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-1 text-center">
-      <h3>How many failed?</h3>
-      <h3>{{question?.numFailed}}</h3>
-    </div>
-    <div class="col-lg-3 col-md-3 col-sm-4 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 text-center">
-      <h3>How many were tested?</h3>
-      <h3>{{question?.numTested}}</h3>
-    </div>
-  </div>
-  <p>Question asked at {{date}}</p>
-  <div [innerHtml]="question.description"></div>
+<div class="panel-body">
+  <h4 class="text-right"><a [routerLink]="['/question', question.module]">Go to the page detail view</a></h4>
+  <question-detail [questionModule]="question.module" [exam]="exam" [date]="date"></question-detail>
 </div>
 </div>
 </div>

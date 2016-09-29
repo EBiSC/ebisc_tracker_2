@@ -1,19 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from'@angular/router';
-import { Subscription } from 'rxjs/Subscription';
+import { Component, OnChanges, OnInit, OnDestroy, SimpleChanges, Input } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/do';
 
 import { Exam } from '../common/exam';
 import { Fail } from '../common/fail';
 import { FailList } from '../common/fail-list';
 import { Question } from '../common/question';
-import { RouteExamService } from '../common/services/route-exam.service';
-import { RouteDateService } from '../common/services/route-date.service';
 import { ApiFailsService } from '../common/services/api-fails.service';
 
 @Component({
+    selector: 'question-detail',
     templateUrl: './question-detail.component.html',
     styles: [`
       .fails-table {
@@ -21,64 +19,65 @@ import { ApiFailsService } from '../common/services/api-fails.service';
       }
     `]
 })
-export class QuestionDetailComponent implements OnInit, OnDestroy{
+export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
+  @Input() questionModule: string;
+  @Input() exam: Exam;
+  @Input() date: string;
+
 
   // public properties
-  questionModule: string = null;
   question: Question;
-  date: string = null;
-  exam: Exam;
   fails: Fail[];
 
-  // private properties
-  private examSubscription: Subscription = null;
-  private dateSubscription: Subscription = null;
-  
+  // public properties
+  private failListSource: Subject<Observable<FailList>>;
+  private failListSubscription: Subscription;
+
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private routeExamService: RouteExamService,
-    private routeDateService: RouteDateService,
     private apiFailsService: ApiFailsService,
-  ){};
+  ){ 
+    this.failListSource = new Subject<Observable<FailList>>();
+  };
 
   ngOnInit() {
-    this.examSubscription =
-      this.routeExamService.exam$.subscribe((exam:Exam) => {
-        this.exam = exam;
-        if (exam) {
-          for (let question of exam.questions) {
-            if (question.module == this.activatedRoute.snapshot.params['qModule']) {
-              this.question = question;
-              break;
-            }
-          }
-        }
-        else {
-          this.question = null;
-        }
-    });
-    this.dateSubscription =
-      this.routeDateService.date$.do((date:string) => {
-        this.questionModule = this.activatedRoute.snapshot.params['qModule'];
-        this.date = date;
-      })
-      .switchMap((date:string): Observable<FailList> => {
-        if (date && this.questionModule) {
-          return this.apiFailsService.search(date, this.questionModule);
-        }
-        else {
-          return Observable.of<FailList>(null);
-        }
-      })
-      .subscribe((fails:FailList) => this.fails = fails ? fails.items : null);
+    this.failListSubscription = this.failListSource
+        .switchMap((o: Observable<FailList>):Observable<FailList> => o)
+        .subscribe((f:FailList) => this.fails = f ? f.items : null);
+    this.getFailList();
   };
 
   ngOnDestroy() {
-    if (this.examSubscription) {
-      this.examSubscription.unsubscribe();
+    if (this.failListSubscription) {
+      this.failListSubscription.unsubscribe();
     }
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
+  };
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['exam'] || changes['questionModule']) {
+      if (this.exam && this.questionModule) {
+        for (let question of this.exam.questions) {
+          if (question.module == this.questionModule) {
+            this.question = question;
+            break;
+          }
+        }
+      }
+      else {
+        this.question = null;
+      }
+    }
+
+    if (changes['date'] || changes['questionModule']) {
+      this.getFailList();
+    }
+  };
+
+  private getFailList() {
+    if (this.date && this.questionModule) {
+      this.failListSource.next(this.apiFailsService.search(this.date, this.questionModule));
+    }
+    else {
+      this.failListSource.next(Observable.empty<FailList>());
     }
   }
 };
