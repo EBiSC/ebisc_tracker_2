@@ -13,9 +13,11 @@ export class ApiFailsService {
 
   // public methods
 
-  public search(date: string, module: string): Observable<FailList>{
+  public search(date: string, module: string, offset?: number): Observable<FailList>{
     let params = new URLSearchParams();
     params.set('module', module);
+    params.set('offset', ""+(offset || 0));
+    params.set('limit', "20");
     let o: Observable<Response> = this.http.get(`/api/exams/${date}/fails`, {search: params});
     return this.apiErrorService.handleError(o)
       .map((res:Response):FailList => res ? res.json() as FailList : null);

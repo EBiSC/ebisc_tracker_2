@@ -13,7 +13,7 @@
 <div class="panel-heading clickable" (click)="uncollapsed[question.module] = !uncollapsed[question.module]">
   <h2 class="panel-title">{{question.title}} <span *ngIf="question.numFailed" class="fails-badge">{{question.numFailed}} fails</span></h2>
 </div>
-<div class="panel-collapse" role="tabpanel" [ngClass]="{'collapse': !uncollapsed[question.module]}">
+<div class="panel-collapse" role="tabpanel" *ngIf="uncollapsed[question.module]">
 <div class="panel-body">
   <h4 class="text-right"><a [routerLink]="['/question', question.module]">Go to the question detail view</a></h4>
   <question-detail [questionModule]="question.module" [exam]="exam" [date]="date"></question-detail>

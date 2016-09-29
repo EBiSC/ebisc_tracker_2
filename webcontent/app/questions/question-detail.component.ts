@@ -27,9 +27,10 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
 
   // public properties
   question: Question;
-  fails: Fail[];
+  failList: FailList;
+  failsOffset: number = 0;
 
-  // public properties
+  // private properties
   private failListSource: Subject<Observable<FailList>>;
   private failListSubscription: Subscription;
 
@@ -42,7 +43,7 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
   ngOnInit() {
     this.failListSubscription = this.failListSource
         .switchMap((o: Observable<FailList>):Observable<FailList> => o)
-        .subscribe((f:FailList) => this.fails = f ? f.items : null);
+        .subscribe((f:FailList) => this.failList = f );
     this.getFailList();
   };
 
@@ -68,16 +69,36 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
     }
 
     if (changes['date'] || changes['questionModule']) {
+      this.failsOffset = 0;
       this.getFailList();
     }
   };
 
   private getFailList() {
     if (this.date && this.questionModule) {
-      this.failListSource.next(this.apiFailsService.search(this.date, this.questionModule));
+      this.failListSource.next(this.apiFailsService.search(this.date, this.questionModule, this.failsOffset));
     }
     else {
       this.failListSource.next(Observable.empty<FailList>());
     }
+  }
+
+  tableNext() {
+    if (this.tableHasMore()) {
+      this.failsOffset += this.failList.pageLimit;
+      this.getFailList();
+    }
+  }
+  tablePrevious() {
+    if (this.failList && this.failList.items) {
+      this.failsOffset -= this.failsOffset >= this.failList.pageLimit ? this.failsOffset - this.failList.pageLimit : 0;
+      this.getFailList();
+    }
+  }
+  tableHasMore():boolean {
+    if (this.failList && this.failList.total > this.failsOffset + this.failList.pageLimit) {
+      return true;
+    }
+    return false;
   }
 };

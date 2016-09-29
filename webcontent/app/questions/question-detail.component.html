@@ -26,16 +26,30 @@
 <div [innerHtml]="question?.description" class="panel-body"></div>
 </div>
 
-<div *ngIf="fails">
+<div *ngIf="failList?.items">
 <h3>Breakdown of the fails</h3>
-<div class="fails-table center-block"><table class="table table-striped table-hover table-responsive">
+
+<div class="fails-table center-block">
+  <div class="pull-left "><button class="btn btn-default" type="button" (click)="tablePrevious()"
+    *ngIf="failsOffset">Previous</button></div>
+  <div class="pull-right "><button class="btn btn-default" type="button" (click)="tableNext()"
+    *ngIf="tableHasMore()">Next</button></div>
+<div class="clearfix"></div>
+
+<table class="table table-striped table-hover table-responsive">
 <thead><tr>
   <th>Cell line</th><th>Batch</th>
 </tr></thead>
-<tbody><tr *ngFor="let fail of fails">
+<tbody><tr *ngFor="let fail of failList?.items">
 <td>{{fail.cellLine}}</td><td>{{fail.batch || 'N/A'}}</td>
-
 </tr></tbody>
-  
-</table></div>
+</table>
+
+<div class="clearfix"></div>
+  <div class="pull-left "><button class="btn btn-default" type="button" (click)="tablePrevious()"
+    *ngIf="failsOffset">Previous</button></div>
+  <div class="pull-right "><button class="btn btn-default" type="button" (click)="tableNext()"
+    *ngIf="tableHasMore()">Next</button></div>
+
+</div>
 </div>
