@@ -13,12 +13,14 @@ export class ApiFailsService {
 
   // public methods
 
-  public search(date: string, module: string, offset?: number): Observable<FailList>{
-    let params = new URLSearchParams();
-    params.set('module', module);
-    params.set('offset', ""+(offset || 0));
-    params.set('limit', "20");
-    let o: Observable<Response> = this.http.get(`/api/exams/${date}/fails`, {search: params});
+  public search(date: string, params: {[param:string]: string|number}): Observable<FailList>{
+    let p = new URLSearchParams();
+    p.set('offset', "0"); // default
+    p.set('limit', "20"); // default
+    for (let param in params) {
+      p.set(param, ""+params[param]);
+    }
+    let o: Observable<Response> = this.http.get(`/api/exams/${date}/fails`, {search: p});
     return this.apiErrorService.handleError(o)
       .map((res:Response):FailList => res ? res.json() as FailList : null);
   };

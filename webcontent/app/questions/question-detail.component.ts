@@ -75,7 +75,7 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
 
   private getFailList() {
     if (this.date && this.questionModule) {
-      this.failListSource.next(this.apiFailsService.search(this.date, this.questionModule, this.failsOffset));
+      this.failListSource.next(this.apiFailsService.search(this.date, {module: this.questionModule, offset: this.failsOffset}));
     }
     else {
       this.failListSource.next(Observable.empty<FailList>());

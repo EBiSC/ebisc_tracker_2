@@ -1,0 +1,23 @@
+<ol class="breadcrumb">
+  <li><a routerLink="/">Home</a></li>
+  <li><a routerLink="/cell-lines">Cell lines</a></li>
+  <li class="active">{{cellLine}}</li>
+</ol>
+
+<p>This current view shows you details of your <strong>chosen cell line</strong> at a certain <strong>point in time</strong>.</p>
+
+<h1 class="text-center">{{cellLine}} at {{date | prettyDate}}</h1>
+
+<div *ngIf="failList?.items">
+<table class="table table-striped table-hover table-responsive">
+<thead><tr>
+  <th></th><th>Cell line</th><th>Batch</th><th>Question failed</th>
+</tr></thead>
+<tbody><tr *ngFor="let fail of failList?.items; let i=index;" >
+  <td>{{i + failsOffset +1}}</td>
+  <td>{{fail.cellLine}}</td>
+  <td>{{fail.batch || 'N/A'}}</td>
+  <td><a [routerLink]="['/question', fail.module]">{{fail.module}}</a></td>
+</tr></tbody>
+</table>
+</div>

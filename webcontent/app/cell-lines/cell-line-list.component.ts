@@ -14,7 +14,8 @@ import { LineFailList } from '../shared/line-fail-list';
       .fails-table {
         max-width: 500px;
       }
-    `]
+    `],
+    styleUrls: ['../shared/css/shared.css'],
 })
 export class CellLineListComponent implements OnInit, OnDestroy{
 
