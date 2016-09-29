@@ -3,11 +3,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'prettyDate' })
 export class PrettyDatePipe implements PipeTransform {
 
-  reT = new RegExp('T');
-  reSuffix = new RegExp('\..*');
+  reT = /T/;
+  reSuffix = /\..*/;
 
   transform(date: string): string {
-    console.log('here');
-    return date ? date.replace(this.reT, "").replace(this.reSuffix, "") : null;
+    return date ? date.replace(this.reT, " ").replace(this.reSuffix, "") : null;
   }
 }
