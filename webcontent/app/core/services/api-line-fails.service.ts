@@ -16,7 +16,7 @@ export class ApiLineFailsService {
   public search(date: string, offset?: number): Observable<LineFailList>{
     let params = new URLSearchParams();
     params.set('offset', ""+(offset || 0));
-    params.set('limit', "50");
+    params.set('limit', "20");
     let o: Observable<Response> = this.http.get(`/api/exams/${date}/line_fails`, {search: params});
     return this.apiErrorService.handleError(o)
       .map((res:Response):LineFailList => res ? res.json() as LineFailList : null);
