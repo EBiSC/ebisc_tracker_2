@@ -3,7 +3,6 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/do';
 
 import { Exam } from '../shared/exam';
 import { Fail } from '../shared/fail';

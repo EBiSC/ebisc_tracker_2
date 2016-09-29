@@ -8,10 +8,11 @@ import { HomeComponent }  from './home.component';
 
 import { routing, appRoutingProviders} from './app.routing';
 import { QuestionsModule }  from './questions/questions.module';
+import { CellLinesModule }  from './cell-lines/cell-lines.module';
 import { CoreModule }  from './core/core.module';
 
 @NgModule({
-  imports: [ BrowserModule, CoreModule, routing, QuestionsModule ],
+  imports: [ BrowserModule, CoreModule, routing, QuestionsModule, CellLinesModule ],
   declarations: [ AppComponent, PageNotFoundComponent, ApiErrorComponent, HomeComponent ],
   providers: [ appRoutingProviders ],
   bootstrap: [ AppComponent ]

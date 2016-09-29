@@ -1,0 +1,33 @@
+<ol class="breadcrumb">
+  <li><a routerLink="/">Home</a></li>
+  <li class="active">Cell lines</li>
+</ol>
+
+<p>This current view shows you details of <strong>all cell lines</strong> that failed <strong>any question</strong> at a certain <strong>point in time</strong>. Click on any cell line for a more detailed breakdown of which questions were failed.</p>
+
+<h1 class="text-center">Cell lines failed at {{date | prettyDate}}</h1>
+
+<div class="fails-table center-block">
+  <div class="pull-left "><button class="btn btn-default" type="button" (click)="tablePrevious()"
+    *ngIf="lineFailsOffset">Previous</button></div>
+  <div class="pull-right "><button class="btn btn-default" type="button" (click)="tableNext()"
+    *ngIf="tableHasMore()">Next</button></div>
+  <div class="clearfix"></div>
+
+<table class="table table-striped table-hover table-responsive">
+<thead><tr>
+  <th></th><th>Cell line</th><th>Questions failed</th>
+</tr></thead>
+<tbody><tr *ngFor="let lineFail of lineFailList?.items; let i=index;">
+<td>{{i + lineFailsOffset +1}}</td>
+<td>{{lineFail.cellLine}}</td><td>{{lineFail.modules.length}}</td>
+</tr></tbody>
+</table>
+
+  <div class="clearfix"></div>
+  <div class="pull-left "><button class="btn btn-default" type="button" (click)="tablePrevious()"
+    *ngIf="lineFailsOffset">Previous</button></div>
+  <div class="pull-right "><button class="btn btn-default" type="button" (click)="tableNext()"
+    *ngIf="tableHasMore()">Next</button></div>
+  <div class="clearfix"></div>
+</div>

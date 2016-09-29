@@ -167,7 +167,7 @@ func lineFailHandlerFn(vars apiVars, session *mgo.Session) *apiResponse{
       "$project": bson.M{"cellLine": "$_id", "modules": 1, "count": bson.M{"$size": "$modules"}},
     }
     o4 := bson.M{
-      "$sort": bson.D{{"count", 1}, {"cellLine", 1}},
+      "$sort": bson.D{{"count", -1}, {"cellLine", 1}},
     }
     o5 := bson.M{"$skip": skip}
     o6 := bson.M{"$limit": limit}
