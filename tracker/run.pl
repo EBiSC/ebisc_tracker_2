@@ -6,9 +6,11 @@ use EBiSC::Utils::hPSCreg qw();
 use EBiSC::Utils::IMS qw();
 use EBiSC::Utils::Biosamples qw();
 use EBiSC::Utils::Question qw();
+use EBiSC::Utils::ECACC qw();
 use EBiSC::API::hPSCreg;
 use EBiSC::API::IMS;
 use EBiSC::API::Biosamples;
+use EBiSC::API::ECACC;
 use EBiSC::MongoDB;
 
 my $hpscreg_api = EBiSC::API::hPSCreg->new(
@@ -37,6 +39,11 @@ EBiSC::Utils::hPSCreg::sync_db(
 
 EBiSC::Utils::Biosamples::sync_db(
   api => EBiSC::API::Biosamples->new(),
+  db => $db,
+);
+
+EBiSC::Utils::ECACC::sync_db(
+  api => EBiSC::API::ECACC->new(),
   db => $db,
 );
 
