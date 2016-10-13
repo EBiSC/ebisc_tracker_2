@@ -9,6 +9,7 @@ our @modules = qw(
   IMSBiosample LiveNoBatches LiveNoClip LiveNoCofA hPSCregBiosample
   hPSCregIMSAgree::BiosampleIDs hPSCregIMSAgree::DonorBiosampleIDs
   hPSCregIMSAgree::IMSExported hPSCregIMSAgree::hPSCregExported
+  ECACCLive
   Biosamples::LineExported Biosamples::DonorExported
   Biosamples::BatchExported Biosamples::OriginCellLine
   Biosamples::OriginDonor Biosamples::VialDerivedFrom
