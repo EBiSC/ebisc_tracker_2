@@ -28,7 +28,7 @@ sub run {
     {
       'obj.flag_go_live' => boolean::true,
       'obj.batches.0' => {'$exists' => boolean::false},
-      'obj.availability' => {'$not' => 'Expand to order'},
+      'obj.availability' => {'$ne' => 'Expand to order'},
     },
     {projection => {name => 1}},
   );
