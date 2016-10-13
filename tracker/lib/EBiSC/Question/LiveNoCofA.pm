@@ -12,6 +12,7 @@ A cell line is tested if...
 
 * If line is exported by the IMS API
 * ...and if that line is marked as "go live"
+* ...and if that line is not marked as availability="Expand to order"
 
 Requirements to pass:
 
@@ -27,6 +28,7 @@ sub run {
     {
       'obj.flag_go_live' => boolean::true,
       'obj.batches.certificate_of_analysis.file' => {'$exists' => boolean::false},
+      'obj.availability' => {'$ne' => 'Expand to order'},
     },
     {projection => {name => 1}},
   );
