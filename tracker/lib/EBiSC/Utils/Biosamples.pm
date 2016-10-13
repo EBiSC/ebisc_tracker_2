@@ -49,7 +49,7 @@ sub sync_db {
       my $vial_derived_from = undef;
       if (my $vial_id = $obj->{samples} && $obj->{samples}[0]) {
         if (my $vial = $api->get_sample($vial_id)) {
-          $vial_derived_from = $vial->{characteristics}{derived_from} && $vial->{characteristics}{derived_from}[0]{text};
+          $vial_derived_from = $vial->{characteristics}{DerivedFrom} && $vial->{characteristics}{DerivedFrom}[0]{text};
         }
       }
 
