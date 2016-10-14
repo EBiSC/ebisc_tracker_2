@@ -26,6 +26,7 @@ export class ApiErrorService {
 
   // private methods
   private subscribe(o: Observable<Response>, s: ReplaySubject<Response>, dismissFn?: () => any): void {
+    let service = this;
     o.subscribe(
       (res: Response) => {
         s.next(res);
@@ -33,13 +34,25 @@ export class ApiErrorService {
       },
       (error: any) => {
         console.error('An error occurred', error); // for demo purposes only
-        let json = error.json()
-        let errMsg = json && json['message'] ? json['message']
-                   : error.message ? error.message
-                   : error.status ? `API error: ${error.status} - ${error.statusText}`
-                   : 'API error';
+
+        let errMsg = ""
+        if (typeof error._body === 'string') {
+          interface ApiErrorResp {
+            message: string
+          }
+          var apiErrorResp:ApiErrorResp = JSON.parse(error._body);
+          if (apiErrorResp.message) {
+            errMsg = ` - ${apiErrorResp.message}`;
+          }
+        }
+        if (!errMsg && error.message) {
+            errMsg = ` - ${error.message}`;
+        }
+        let errStatus = error.status ? `${error.status}` : "Could not connect";
+        errMsg = `API error: ${errStatus}${errMsg}`;
+
         let retryFn: () => void = function() {
-          this.subscribe(o, s, dismissFn);
+          service.subscribe(o, s, dismissFn);
           return;
         };
         this.errorSource.next(new ApiErrorHandle(errMsg, s, dismissFn, retryFn) );

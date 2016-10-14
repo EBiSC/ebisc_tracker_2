@@ -1,7 +1,7 @@
 import { Observer } from 'rxjs/Observer';
 
 export class ApiErrorHandle {
-  private dimissed: boolean = false;
+  private dismissed: boolean = false;
   private retried: boolean = false;
 
   constructor(

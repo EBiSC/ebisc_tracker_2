@@ -7,7 +7,6 @@ import { ApiErrorHandle } from './core/api-error-handle';
 @Component({
     selector: 'api-error',
     templateUrl: './api-error.component.html',
-    providers: [ ApiErrorService ]
 })
 export class ApiErrorComponent implements OnInit{
 
