@@ -7,10 +7,17 @@ import { Observable } from 'rxjs/Observable';
 import { Exam } from '../shared/exam';
 import { ApiExamService } from '../core/services/api-exam.service';
 import { RouteDateService } from '../core/services/route-date.service';
+import { sharedStyles } from '../shared/styles/shared.styles';
+
+const questionListStyles: string = `
+  span.fails-badge {
+    float: right;
+  }
+`;
 
 @Component({
     templateUrl: './question-list.component.html',
-    styleUrls: ['../shared/css/shared.css', './question-list.component.css'],
+    styles: [sharedStyles, questionListStyles],
 })
 export class QuestionListComponent implements OnInit, OnDestroy{
 

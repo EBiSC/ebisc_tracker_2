@@ -8,15 +8,17 @@ import 'rxjs/add/operator/switchMap';
 import { ApiLineFailsService } from '../core/services/api-line-fails.service';
 import { RouteDateService } from '../core/services/route-date.service';
 import { LineFailList } from '../shared/line-fail-list';
+import { sharedStyles } from '../shared/styles/shared.styles';
+
+const cellLineListStyles: string = `
+    .fails-table {
+      max-width: 500px;
+    }
+`
 
 @Component({
     templateUrl: './cell-line-list.component.html',
-    styles: [`
-      .fails-table {
-        max-width: 500px;
-      }
-    `],
-    styleUrls: ['../shared/css/shared.css'],
+    styles: [ cellLineListStyles, sharedStyles ],
 })
 export class CellLineListComponent implements OnInit, OnDestroy{
 

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 
 import { RouteDateService } from '../services/route-date.service';
+import { sharedStyles } from '../../shared/styles/shared.styles';
 
 @Component({
     templateUrl: './home.component.html',
-    styleUrls: ['../../shared/css/shared.css'],
+    styles: [ sharedStyles ],
 })
 export class HomeComponent{ 
   constructor(
