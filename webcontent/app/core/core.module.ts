@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 
 import { ApiErrorComponent }  from './components/api-error.component';
+import { HistoryWarningComponent }  from './components/history-warning.component';
 import { PageNotFoundComponent }  from './components/page-not-found.component';
 import { HomeComponent }  from './components/home.component';
 import { BreadcrumbsComponent }  from './components/breadcrumbs.component';
@@ -18,9 +19,9 @@ import { DateResolver }  from './services/date-resolver.service';
 
 @NgModule({
   imports: [ SharedModule, CommonModule, RouterModule ],
-  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent ],
+  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent ],
   providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, RouteDateService, DateResolver ],
-  exports: [ ApiErrorComponent, BreadcrumbsComponent ],
+  exports: [ ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent ],
 })
 export class CoreModule { 
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {
