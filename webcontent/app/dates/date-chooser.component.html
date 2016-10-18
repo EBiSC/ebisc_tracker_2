@@ -1,5 +1,12 @@
 <p>This current view shows you dates on which the questions got asked. <strong>Select a date</strong> to see what this website would have looked like on that date.</p>
 <h1 class="text-center">Enter history mode</h1>
-<ul>
-<li *ngFor="let exam of exams"><a [routerLink]="['/home', {date: exam.date}]">{{exam.date | prettyDate}}</a></li>
-</ul>
+
+<div class="dates-table center-block">
+
+<table class="table table-striped table-hover table-responsive">
+<tbody><tr *ngFor="let exam of exams" class="clickable" [routerLink]="['/home', {date: exam.date}]">
+  <td class="text-center"><a>{{exam.date | prettyDate }}</a></td>
+</tr></tbody>
+</table>
+
+</div>

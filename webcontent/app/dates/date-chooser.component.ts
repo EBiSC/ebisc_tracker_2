@@ -3,9 +3,17 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { ExamList } from '../shared/exam-list';
 import { ApiExamService } from '../core/services/api-exam.service';
+import { sharedStyles } from '../shared/styles/shared.styles';
+
+const dateChooserStyles: string = `
+    .dates-table {
+      max-width: 500px;
+    }
+`
 
 @Component({
     templateUrl: './date-chooser.component.html',
+    styles: [ dateChooserStyles, sharedStyles ],
 })
 export class DateChooserComponent implements OnInit {
 
