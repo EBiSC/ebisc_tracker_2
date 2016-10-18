@@ -1,10 +1,11 @@
 import { Injectable }    from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { Http, Response, URLSearchParams } from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 
 import { Exam } from '../../shared/exam';
+import { ExamList } from '../../shared/exam-list';
 import { ApiErrorService } from './api-error.service';
 
 @Injectable()
@@ -36,6 +37,16 @@ export class ApiExamService {
       }
     });
   }
+
+  public getList(params: {[param:string]: string|number}): Observable<ExamList>{
+    let p = new URLSearchParams();
+    for (let param in params) {
+      p.set(param, ""+params[param]);
+    }
+    let o: Observable<Response> = this.http.get(`/api/exams`, {search: p});
+    return this.apiErrorService.handleError(o)
+      .map((res:Response):ExamList => res ? res.json() as ExamList : null);
+  };
 
   // private methods
 
