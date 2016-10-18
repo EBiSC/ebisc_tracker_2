@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { ApiErrorService } from './core/services/api-error.service';
+
+import { ApiErrorComponent } from './core/components/api-error.component';
 
 @Component({
     selector: 'my-app',

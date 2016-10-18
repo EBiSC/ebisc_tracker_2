@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 
@@ -15,42 +15,41 @@ import { FailList } from '../shared/fail-list';
 export class CellLineDetailComponent implements OnInit, OnDestroy {
 
   // public properties
-  date: string = null;
-  cellLine: string = null;
+  date: string
+  cellLine: string
   failList: FailList;
-  failsOffset: number = 0;
+  failsOffset: number
 
   // private properties
-  private dateSubscription: Subscription = null;
-  private failListSource: ReplaySubject<Observable<FailList>>;
+  private routeSubscription: Subscription = null;
+  private failListSource: Subject<Observable<FailList>>;
   private failListSubscription: Subscription = null;
   
   constructor(
     private activatedRoute: ActivatedRoute,
-    private routeDateService: RouteDateService,
     private apiFailsService: ApiFailsService,
-  ){ 
-    this.failListSource =
-        new ReplaySubject<Observable<FailList>>(1);
-  };
+    private routeDateService: RouteDateService,
+  ){ };
 
   ngOnInit() {
+    this.failListSource = new Subject<Observable<FailList>>();
 
     this.failListSubscription = this.failListSource
         .switchMap((o: Observable<FailList>):Observable<FailList> => o)
         .subscribe((f:FailList) => this.failList = f );
 
-    this.dateSubscription =
-      this.routeDateService.date$.subscribe((date:string) => {
-         this.cellLine = this.activatedRoute.snapshot.params['cellLine'];
-         this.date = date 
-         this.getLineFailList();
+    this.routeSubscription =
+      this.activatedRoute.params.subscribe((params: {cellLine: string}) => {
+        this.date = this.activatedRoute.snapshot.data["date"];
+        this.cellLine = params.cellLine;
+        this.failsOffset = 0;
+        this.getLineFailList();
       });
   };
 
   ngOnDestroy() {
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
     }
     if (this.failListSubscription) {
       this.failListSubscription.unsubscribe();
@@ -58,13 +57,8 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
   }
 
   getLineFailList() {
-    if (this.date && this.cellLine) {
-      this.failListSource.next(this.apiFailsService
-        .search(this.date, {cell_line: this.cellLine, offset: this.failsOffset}));
-    }
-    else {
-      this.failListSource.next(Observable.empty<FailList>());
-    }
+    this.failListSource.next(this.apiFailsService
+      .search(this.date, {cell_line: this.cellLine, offset: this.failsOffset}));
   }
 
   tableNext() {
@@ -84,5 +78,9 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
       return true;
     }
     return false;
+  }
+
+  linkParams(): {[s:string]: string} {
+    return this.routeDateService.linkParams({});
   }
 };

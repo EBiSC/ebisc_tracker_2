@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
-  <li><a routerLink="/">Home</a></li>
-  <li><a routerLink="/questions">Questions</a></li>
+  <li><a [routerLink]="['/home', linkParams()]">Home</a></li>
+  <li><a [routerLink]="['/questions', linkParams()]">Questions</a></li>
   <li class="active">{{questionModule}}</li>
 </ol>
 

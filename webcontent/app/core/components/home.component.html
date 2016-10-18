@@ -1,14 +1,14 @@
 <div class="row">
 
 <div class="col-lg-6 col-md-6 col-sm-12">
-<div class="jumbotron clickable" routerLink="/questions">
+<div class="jumbotron clickable" [routerLink]="['/questions', linkParams()]">
 <h1>Questions</h1>
 <p>The <strong>Questions</strong> view shows you details of all questions that got asked at a certain point in time. Click on any question for a more detailed breakdown.</p>
 </div>
 </div>
 
 <div class="col-lg-6 col-md-6 col-sm-12">
-<div class="jumbotron clickable" routerLink="/cell-lines">
+<div class="jumbotron clickable" [routerLink]="['/cell-lines', linkParams()]">
 <h1>Cell Lines</h1>
 <p>The <strong>Cell Lines</strong> view shows you details of which cell lines failed any at a certain point in time. Click on any cell line for a more detailed breakdown.</p>
 </div>

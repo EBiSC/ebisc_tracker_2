@@ -1,14 +1,16 @@
-import { Component, OnChanges, OnInit, OnDestroy, SimpleChanges, Input } from '@angular/core';
+import { Component, OnChanges, OnDestroy, SimpleChanges, Input } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/observable/empty';
 
 import { Exam } from '../shared/exam';
 import { Fail } from '../shared/fail';
 import { FailList } from '../shared/fail-list';
 import { Question } from '../shared/question';
 import { ApiFailsService } from '../core/services/api-fails.service';
+import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
     selector: 'question-detail',
@@ -19,7 +21,7 @@ import { ApiFailsService } from '../core/services/api-fails.service';
       }
     `]
 })
-export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
+export class QuestionDetailComponent implements OnDestroy, OnChanges{
   @Input() questionModule: string;
   @Input() exam: Exam;
   @Input() date: string;
@@ -31,16 +33,16 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
   failsOffset: number = 0;
 
   // private properties
-  private failListSource: BehaviorSubject<Observable<FailList>>;
+  private failListSource: Subject<Observable<FailList>>;
   private failListSubscription: Subscription;
 
   constructor(
     private apiFailsService: ApiFailsService,
-  ){ 
-    this.failListSource = new BehaviorSubject<Observable<FailList>>(null);
-  };
+    private routeDateService: RouteDateService,
+  ){ };
 
-  ngOnInit() {
+  initFailListSource() {
+    this.failListSource = new Subject<Observable<FailList>>();
     this.failListSubscription = this.failListSource
         .switchMap((o: Observable<FailList>):Observable<FailList> => o)
         .subscribe((f:FailList) => this.failList = f );
@@ -53,6 +55,9 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
   };
 
   ngOnChanges(changes: SimpleChanges) {
+    if (! this.failListSource) {
+      this.initFailListSource();
+    }
     if (changes['exam'] || changes['questionModule']) {
       if (this.exam && this.questionModule) {
         for (let question of this.exam.questions) {
@@ -99,5 +104,9 @@ export class QuestionDetailComponent implements OnInit, OnDestroy, OnChanges{
       return true;
     }
     return false;
+  }
+
+  linkParams(): {[s:string]: string} {
+    return this.routeDateService.linkParams({});
   }
 };

@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
-  <li><a routerLink="/">Home</a></li>
-  <li><a routerLink="/cell-lines">Cell lines</a></li>
+  <li><a [routerLink]="['/home', linkParams()]">Home</a></li>
+  <li><a [routerLink]="['/cell-lines', linkParams()]">Cell lines</a></li>
   <li class="active">{{cellLine}}</li>
 </ol>
 
@@ -17,7 +17,7 @@
   <td>{{i + failsOffset +1}}</td>
   <td>{{fail.cellLine}}</td>
   <td>{{fail.batch || 'N/A'}}</td>
-  <td><a [routerLink]="['/question', fail.module]">{{fail.module}}</a></td>
+  <td><a [routerLink]="['/question', fail.module, linkParams()]">{{fail.module}}</a></td>
 </tr></tbody>
 </table>
 </div>

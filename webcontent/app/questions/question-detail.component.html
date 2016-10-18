@@ -42,7 +42,7 @@
 </tr></thead>
 <tbody><tr *ngFor="let fail of failList?.items; let i=index;">
 <td>{{i + failsOffset +1}}</td>
-<td><a [routerLink]="['/cell-line/', fail.cellLine]">{{fail.cellLine}}</a></td><td>{{fail.batch || 'N/A'}}</td>
+<td><a [routerLink]="['/cell-line/', fail.cellLine, linkParams()]">{{fail.cellLine}}</a></td><td>{{fail.batch || 'N/A'}}</td>
 </tr></tbody>
 </table>
 

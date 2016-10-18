@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 import { Exam } from '../shared/exam';
-import { RouteExamService } from '../core/services/route-exam.service';
+import { ApiExamService } from '../core/services/api-exam.service';
 import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
@@ -17,27 +20,38 @@ export class QuestionListComponent implements OnInit, OnDestroy{
   uncollapsed: {[module:string]: boolean} = {};
 
   // private properties
+  private routeSubscription: Subscription = null;
+  private examSource: Subject<Observable<Exam>>;
   private examSubscription: Subscription = null;
-  private dateSubscription: Subscription = null;
   
   constructor(
-    private routeExamService: RouteExamService,
+    private apiExamService: ApiExamService,
+    private activatedRoute: ActivatedRoute,
     private routeDateService: RouteDateService,
   ){};
 
   ngOnInit() {
-    this.examSubscription =
-      this.routeExamService.exam$.subscribe((exam:Exam) => this.exam = exam);
-    this.dateSubscription =
-      this.routeDateService.date$.subscribe((date:string) => this.date = date );
+    this.examSource = new Subject<Observable<Exam>>();
+    this.examSubscription = this.examSource
+        .switchMap((o: Observable<Exam>):Observable<Exam> => o)
+        .subscribe((e:Exam) => this.exam = e );
+    this.routeSubscription =
+      this.activatedRoute.data.subscribe((data: {date: string}) => {
+        this.date = data.date;
+        this.examSource.next(this.apiExamService.getExam(this.date));
+      });
   };
 
   ngOnDestroy() {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
     if (this.examSubscription) {
       this.examSubscription.unsubscribe();
     }
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
-    }
+  }
+
+  linkParams(): {[s:string]: string} {
+    return this.routeDateService.linkParams({});
   }
 };

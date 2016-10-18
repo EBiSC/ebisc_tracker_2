@@ -2,6 +2,7 @@ import { Injectable }    from '@angular/core';
 import { Http, Response } from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/do';
 
 import { Exam } from '../../shared/exam';
 import { ApiErrorService } from './api-error.service';
@@ -21,6 +22,19 @@ export class ApiExamService {
       return this.examObservables[date];
     }
     return this._apiGetExam(date);
+  }
+
+  public getLatestExam(): Observable<Exam>{
+    let key:string = 'latest';
+    if (this.examObservables[key]) {
+      return this.examObservables[key];
+    }
+    return this._apiGetExam(key).do((exam:Exam) => {
+      let date = exam.date;
+      if (! this.examObservables[date]) {
+        this.examObservables[date] = this.examObservables[key];
+      }
+    });
   }
 
   // private methods

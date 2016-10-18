@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/do';
 
-import { Exam } from '../shared/exam';
-import { RouteExamService } from '../core/services/route-exam.service';
+import { ApiExamService } from '../core/services/api-exam.service';
 import { RouteDateService } from '../core/services/route-date.service';
+import { Exam } from '../shared/exam';
 
 @Component({
     templateUrl: './question-detail-wrapper.component.html',
@@ -20,31 +19,39 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
   exam: Exam;
 
   // private properties
+  private routeSubscription: Subscription = null;
+  private examSource: Subject<Observable<Exam>>;
   private examSubscription: Subscription = null;
-  private dateSubscription: Subscription = null;
   
   constructor(
-    private activatedRoute: ActivatedRoute,
-    private routeExamService: RouteExamService,
+    private apiExamService: ApiExamService,
     private routeDateService: RouteDateService,
+    private activatedRoute: ActivatedRoute,
   ){};
 
   ngOnInit() {
-    this.examSubscription =
-      this.routeExamService.exam$.subscribe((exam:Exam) => this.exam = exam);
-    this.dateSubscription =
-      this.routeDateService.date$.subscribe((date:string) => {
-        this.questionModule = this.activatedRoute.snapshot.params['qModule'];
-        this.date = date;
+    this.examSource = new Subject<Observable<Exam>>();
+    this.examSubscription = this.examSource
+        .switchMap((o: Observable<Exam>):Observable<Exam> => o)
+        .subscribe((e:Exam) => this.exam = e );
+    this.routeSubscription =
+      this.activatedRoute.params.subscribe((params: {qModule: string}) => {
+        this.date = this.activatedRoute.snapshot.data["date"];
+        this.questionModule = params.qModule;
+        this.examSource.next(this.apiExamService.getExam(this.date));
       });
   };
 
   ngOnDestroy() {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
     if (this.examSubscription) {
       this.examSubscription.unsubscribe();
     }
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
-    }
+  }
+
+  linkParams(): {[s:string]: string} {
+    return this.routeDateService.linkParams({});
   }
 };

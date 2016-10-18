@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li><a routerLink="/">Home</a></li>
+  <li><a [routerLink]="['/home', linkParams()]">Home</a></li>
   <li class="active">Cell lines</li>
 </ol>
 
@@ -19,7 +19,7 @@
   <th></th><th>Cell line</th><th>Questions failed</th>
 </tr></thead>
 <tbody><tr *ngFor="let lineFail of lineFailList?.items; let i=index;"
-  class="clickable" [routerLink]="['/cell-line', lineFail.cellLine]">
+  class="clickable" [routerLink]="['/cell-line', lineFail.cellLine, linkParams()]">
 <td>{{i + lineFailsOffset +1}}</td>
 <td>{{lineFail.cellLine}}</td><td>{{lineFail.modules.length}}</td>
 </tr></tbody>

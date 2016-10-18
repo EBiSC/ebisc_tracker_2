@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/switchMap';
 
@@ -22,50 +23,44 @@ export class CellLineListComponent implements OnInit, OnDestroy{
   // public properties
   date: string = null;
   lineFailList: LineFailList;
-  lineFailsOffset: number = 0;
+  lineFailsOffset: number
 
   // private properties
-  private dateSubscription: Subscription = null;
-  private lineFailListSource: ReplaySubject<Observable<LineFailList>>;
+  private lineFailListSource: Subject<Observable<LineFailList>>;
   private lineFailListSubscription: Subscription = null;
+  private routeSubscription: Subscription = null;
   
   constructor(
-    private routeDateService: RouteDateService,
     private apiLineFailsService: ApiLineFailsService,
+    private activatedRoute: ActivatedRoute,
+    private routeDateService: RouteDateService,
   ){ };
 
   ngOnInit() {
 
     this.lineFailListSource =
-        new ReplaySubject<Observable<LineFailList>>(1);
+        new Subject<Observable<LineFailList>>();
     this.lineFailListSubscription = this.lineFailListSource
         .switchMap((o: Observable<LineFailList>):Observable<LineFailList> => o)
         .subscribe((l:LineFailList) => this.lineFailList = l );
 
-    this.dateSubscription =
-      this.routeDateService.date$.subscribe((date:string) => {
-         this.date = date 
-         this.getLineFailList();
+    this.routeSubscription =
+      this.activatedRoute.data.subscribe((data: {date: string}) => {
+        this.date = data.date;
+        this.lineFailsOffset = 0;
+        this.getLineFailList();
       });
   };
 
   ngOnDestroy() {
-    if (this.dateSubscription) {
-      this.dateSubscription.unsubscribe();
-    }
-    if (this.lineFailListSubscription) {
-      this.lineFailListSubscription.unsubscribe();
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
     }
   }
 
   getLineFailList() {
-    if (this.date) {
-      this.lineFailListSource.next(this.apiLineFailsService
-        .search(this.date, this.lineFailsOffset));
-    }
-    else {
-      this.lineFailListSource.next(Observable.empty<LineFailList>());
-    }
+    this.lineFailListSource.next(this.apiLineFailsService
+      .search(this.date, this.lineFailsOffset));
   }
 
   tableNext() {
@@ -85,5 +80,9 @@ export class CellLineListComponent implements OnInit, OnDestroy{
       return true;
     }
     return false;
+  }
+
+  linkParams(): {[s:string]: string} {
+    return this.routeDateService.linkParams({});
   }
 };
