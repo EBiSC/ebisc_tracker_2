@@ -24,7 +24,7 @@ export class RouteDateService {
     }
 
     let route = this.activatedRoute.root;
-    while (route) {
+    while (route && route.snapshot) {
       let snapshot = route.snapshot;
       if (snapshot.params["date"]) {
         this.date = snapshot.params["date"];

@@ -5,7 +5,6 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 import { ApiExamService } from '../core/services/api-exam.service';
-import { RouteDateService } from '../core/services/route-date.service';
 import { Exam } from '../shared/exam';
 
 @Component({
@@ -25,7 +24,6 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
   
   constructor(
     private apiExamService: ApiExamService,
-    private routeDateService: RouteDateService,
     private activatedRoute: ActivatedRoute,
   ){};
 
@@ -49,9 +47,5 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
     if (this.examSubscription) {
       this.examSubscription.unsubscribe();
     }
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 };

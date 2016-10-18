@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ApiErrorComponent }  from './components/api-error.component';
 import { PageNotFoundComponent }  from './components/page-not-found.component';
 import { HomeComponent }  from './components/home.component';
+import { BreadcrumbsComponent }  from './components/breadcrumbs.component';
 
 import { ApiExamService }  from './services/api-exam.service';
 import { ApiFailsService }  from './services/api-fails.service';
@@ -17,9 +18,9 @@ import { DateResolver }  from './services/date-resolver.service';
 
 @NgModule({
   imports: [ SharedModule, CommonModule, RouterModule ],
-  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent ],
+  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent ],
   providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, RouteDateService, DateResolver ],
-  exports: [ ApiErrorComponent ],
+  exports: [ ApiErrorComponent, BreadcrumbsComponent ],
 })
 export class CoreModule { 
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

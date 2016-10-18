@@ -6,8 +6,11 @@ import { QuestionListComponent } from './question-list.component';
 import { DateResolver } from '../core/services/date-resolver.service';
 
 const questionsRoutes: Routes = [
-  {path: 'questions', component: QuestionListComponent, resolve: {date: DateResolver}},
-  {path: 'question/:qModule', component: QuestionDetailWrapperComponent, resolve: {date: DateResolver}},
+  {path: 'question', redirectTo: 'questions'},
+  {path: 'questions', data: {breadcrumb: "Questions"}, children: [
+    {path: '', component: QuestionListComponent, resolve: {date: DateResolver}},
+    {path: ':qModule', component: QuestionDetailWrapperComponent, resolve: {date: DateResolver}},
+  ]},
 ];
 
 export const questionsRoutingProviders: any[] = [];
