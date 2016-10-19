@@ -15,12 +15,13 @@ import { ApiFailsService }  from './services/api-fails.service';
 import { ApiLineFailsService }  from './services/api-line-fails.service';
 import { ApiErrorService }  from './services/api-error.service';
 import { RouteDateService }  from './services/route-date.service';
+import { HistoryModeEnabledService }  from './services/history-mode-enabled.service';
 import { DateResolver }  from './services/date-resolver.service';
 
 @NgModule({
   imports: [ SharedModule, CommonModule, RouterModule ],
   declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent ],
-  providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, RouteDateService, DateResolver ],
+  providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, RouteDateService, HistoryModeEnabledService, DateResolver ],
   exports: [ ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent ],
 })
 export class CoreModule { 
