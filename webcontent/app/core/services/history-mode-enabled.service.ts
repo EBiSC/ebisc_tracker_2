@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { ApiExamService } from './api-exam.service';
 import { RouteDateService } from '../services/route-date.service';
@@ -14,7 +14,7 @@ export class HistoryModeEnabledService {
   // private properties
   currentDate: string;
   latestDate: string;
-  enabledSource: Subject<boolean>
+  enabledSource: ReplaySubject<boolean>
 
 
   constructor(
@@ -22,7 +22,7 @@ export class HistoryModeEnabledService {
     private routeDateService: RouteDateService,
   ) {
     if (apiExamService && routeDateService) {
-      this.enabledSource = new Subject<boolean>();
+      this.enabledSource = new ReplaySubject<boolean>(1);
       this.enabled$ = this.enabledSource.asObservable();
 
       routeDateService.resolvedDate$.subscribe((date: string) => {

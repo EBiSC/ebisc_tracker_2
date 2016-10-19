@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { ApiExamService } from '../services/api-exam.service';
 import { RouteDateService } from '../services/route-date.service';
+import { HistoryModeEnabledService } from '../services/history-mode-enabled.service';
 
 @Component({
     selector: 'history-warning',
@@ -18,39 +19,32 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
 
   // private properties
   private routeSubscription: Subscription = null;
+  private historyEnabledSubscription: Subscription = null;
 
   constructor(
     private apiExamService: ApiExamService,
     private routeDateService: RouteDateService,
+    private historyModeEnabledService: HistoryModeEnabledService,
     private router: Router,
   ){};
 
   ngOnInit() {
     this.routeSubscription =
-      this.routeDateService.resolvedDate$.subscribe((date: string) => {
-        if (date !== this.currentDate) {
-          this.currentDate = date;
-          this.setWarning();
-        }
-      });
-    this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => {
-      this.latestDate = exam.date;
-      this.setWarning();
-    });
+      this.routeDateService.resolvedDate$.subscribe((date: string) => this.currentDate = date);
+
+    this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => this.latestDate = exam.date);
+
+    this.historyEnabledSubscription = this.historyModeEnabledService.enabled$
+      .subscribe((enabled: boolean) => this.showWarning = enabled);
+
   }
 
   ngOnDestroy() {
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
     }
-  }
-
-  setWarning() {
-    if (this.currentDate && this.latestDate && (this.currentDate !== this.latestDate)) {
-      this.showWarning = true;
-    }
-    else {
-      this.showWarning = false;
+    if (this.historyEnabledSubscription) {
+      this.historyEnabledSubscription.unsubscribe();
     }
   }
 

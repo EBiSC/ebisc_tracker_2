@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd, Route } from'@angular/router';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
 
 import { ApiExamService } from './api-exam.service';
+import { Exam } from '../../shared/exam';
 
 @Injectable()
 export class RouteDateService {
@@ -12,7 +14,9 @@ export class RouteDateService {
   readonly resolvedDate$: Observable<string>;
 
   // private properties
-  private date: string
+  private dateSnapshot: string
+  private dateSource: ReplaySubject<string>;
+  private resolvedDateSource: ReplaySubject<Observable<Exam>>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -20,29 +24,35 @@ export class RouteDateService {
     private apiExamService: ApiExamService,
   ) {
     if (router && apiExamService) {
+      this.dateSource = new ReplaySubject<string>(1);
+      this.resolvedDateSource = new ReplaySubject<Observable<Exam>>(1);
+
+      this.date$ = this.dateSource.asObservable();
+      this.resolvedDate$ = this.resolvedDateSource.asObservable()
+        .switchMap(o => o).map((e: Exam) => e.date);
+
       router.events.filter(event => event instanceof NavigationEnd)
-         .subscribe(event =>  this.date = null );
+        .map(event => this.inspectRouter())
+        .subscribe(date => {
+          this.dateSnapshot = date;
+          this.dateSource.next(date)
+        });
 
-      this.date$ = router.events.filter(event => event instanceof NavigationEnd)
-        .map(event => this.inspectRouter());
-
-      this.resolvedDate$ = this.date$.map(date => {
-        return date ? apiExamService.getExam(date) : apiExamService.getLatestExam();
-      })
-       .switchMap(o => o).map((exam: {date: string}) => exam.date);
+      this.dateSource.subscribe(date => {
+        this.resolvedDateSource.next(
+          date ? apiExamService.getExam(date) : apiExamService.getLatestExam()
+        );
+      });
     }
   };
 
   // public methods
   getDate(): string {
-    if (! this.date) {
-      this.date = this.inspectRouter();
-    }
-    return this.date;
+    return this.dateSnapshot;
   }
 
   linkParams(o: {[s:string]: string}): {[s:string]:string} {
-    let date = this.getDate();
+    let date = this.dateSnapshot;
     if (date && date !== 'latest') {
       o['date'] = date;
     }
