@@ -16,7 +16,7 @@ has 'lines' => (is => 'ro', isa => 'EBiSC::Cursor::IMS', lazy => 1, builder => '
 sub BUILD {
   my ($self) = @_;
   $self->ua->default_header(Authorization => sprintf('ApiKey %s:%s', $self->user, $self->pass));
-  $self->ua->timeout(30);
+  $self->ua->timeout(60);
 }
 
 
