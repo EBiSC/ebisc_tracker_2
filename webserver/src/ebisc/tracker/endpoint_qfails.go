@@ -17,7 +17,7 @@ type qFailsForm struct {
   Offset uint         `form:"offset"`
   MgoQuery struct {
     Date *time.Time   `path:"date"      bson:"date,omitempty"`
-    CellLine *string  `form:"cell_line" bson:"cell_line,omitempty"`
+    CellLine *string  `form:"cell_line" bson:"cellLine,omitempty"`
     Batch *string     `form:"batch"     bson:"batch,omitempty"`
     Module *string    `form:"module"    bson:"module,omitempty"`
   }                   `form:",inline"   path:",inline"`
