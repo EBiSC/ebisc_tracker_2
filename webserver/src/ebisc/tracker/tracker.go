@@ -49,6 +49,7 @@ func main() {
   api := r.PathPrefix("/api").Subrouter()
 
   addEndpoint(api, endpointTest,      handleTest() )
+  addEndpoint(api, endpointExamLatest,      handleExam(session) )
   addEndpoint(api, endpointExam,      handleExam(session) )
   addEndpoint(api, endpointExamList,  handleExamList(session) )
   addEndpoint(api, endpointQFails,    handleQFails(session) )

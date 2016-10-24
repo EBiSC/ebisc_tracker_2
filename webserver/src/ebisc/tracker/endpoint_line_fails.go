@@ -30,12 +30,15 @@ type lineFailsHandler struct {
 }
 
 func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+  //opts := &lineFailsForm{ Limit: 100 }
   opts := &lineFailsForm{ Limit: 100 }
   if err := optshttp.UnmarshalForm(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
   if err := optshttp.UnmarshalPath(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
   if (opts.Limit > 100) {
     opts.Limit = 100
@@ -53,6 +56,7 @@ func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
   if n, err := c.Find(opts.mgoQuery).Count(); err != nil {
     jsonhttp.Error(w, "Database error", http.StatusInternalServerError)
+    return
   } else {
     qFails.Total = uint(n)
   }
@@ -63,7 +67,9 @@ func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   operationsDistinct := []bson.M{o1,oDistinct2, oDistinct3}
   pipeDistinct := c.Pipe(operationsDistinct)
   if err := pipeDistinct.One(&bson.M{"count": &qFails.Total}); err != nil && err != mgo.ErrNotFound {
-      jsonhttp.Error(w, "Database find error", http.StatusInternalServerError)
+      jsonhttp.Error(w, err.Error(), http.StatusInternalServerError)
+      //jsonhttp.Error(w, "Database find error", http.StatusInternalServerError)
+      return
   }
 
   if (qFails.Total > qFails.Offset) {
@@ -89,6 +95,7 @@ func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
     if err := pipe.All(&qFails.Items); err != nil {
       jsonhttp.Error(w, "Database pipe error", http.StatusInternalServerError)
+      return
     }
   }
 

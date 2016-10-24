@@ -35,9 +35,11 @@ func (h *qFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   opts := &qFailsForm{ Limit: 100 }
   if err := optshttp.UnmarshalForm(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
   if err := optshttp.UnmarshalPath(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
   if (opts.Limit > 100) {
     opts.Limit = 100
@@ -55,6 +57,7 @@ func (h *qFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   }
   if n, err := query.Count(); err != nil {
     jsonhttp.Error(w, "Database error", http.StatusInternalServerError)
+    return
   } else {
     qFails.Total = uint(n)
   }
@@ -67,6 +70,7 @@ func (h *qFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
     if err := query.All(&qFails.Items); err != nil {
       jsonhttp.Error(w, "Database find error", http.StatusInternalServerError)
+      return
     }
   }
 

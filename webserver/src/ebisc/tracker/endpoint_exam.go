@@ -33,6 +33,7 @@ func (e *examHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   opts := &examForm{}
   if err := optshttp.UnmarshalPath(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
 
   session := e.session.Copy()
@@ -40,8 +41,7 @@ func (e *examHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   db := session.DB("ebisc")
   c := db.C("exam")
 
-  questions := []bson.M{}
-  exam := bson.M{"questions": questions}
+  exam := bson.M{}
   if err := c.Find(opts).Sort("-date").One(&exam); err != nil {
     if (err == mgo.ErrNotFound) {
       jsonhttp.Error(w, fmt.Sprintf("Exam with date %v not found", opts.Date), http.StatusNotFound)
@@ -52,19 +52,31 @@ func (e *examHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   }
 
   c = db.C("question_module")
-  for _, q := range questions {
-    if (q["module"] == nil) {
-      continue
-    }
-    err := c.Find(
-        bson.M{"module": q["module"]},
-      ).Select(
-        bson.M{"title": 1, "description": 1, "_id": 0},
-      ).One(&q)
+  if qSlice, ok := exam["questions"].([]interface{}); ok {
+    var qMap bson.M
+    for _, q := range qSlice {
+      if qMap, ok = q.(bson.M); !ok {
+        jsonhttp.Error(w, "Server database error", http.StatusInternalServerError)
+        return
+      }
+      if (qMap["module"] == nil) {
+        continue
+      }
+      expandedQ := &bson.M{}
+      err := c.Find(
+          bson.M{"module": qMap["module"]},
+        ).Select(
+          bson.M{"title": 1, "description": 1, "_id": 0},
+        ).One(&expandedQ)
 
-    if err != nil && err != mgo.ErrNotFound {
-      jsonhttp.Error(w, "Server database error", http.StatusInternalServerError)
-      return
+      if err != nil && err != mgo.ErrNotFound {
+        jsonhttp.Error(w, "Server database error", http.StatusInternalServerError)
+        return
+      }
+
+      for key, val := range *expandedQ {
+        qMap[key] = val;
+      }
     }
   }
   delete(exam, "_id")

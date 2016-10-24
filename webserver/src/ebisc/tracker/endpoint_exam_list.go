@@ -28,6 +28,7 @@ func (e *examListHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   opts := &examListForm{}
   if err := optshttp.UnmarshalForm(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
+    return
   }
   session := e.session.Copy()
   defer session.Close()
