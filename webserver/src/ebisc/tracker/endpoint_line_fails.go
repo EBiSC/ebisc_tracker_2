@@ -55,11 +55,11 @@ func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   oDistinct3 := bson.M{"$group": bson.M{"_id": nil, "count": bson.M{"$sum": 1}}}
   operationsDistinct := []bson.M{o1,oDistinct2, oDistinct3}
   pipeDistinct := c.Pipe(operationsDistinct)
-  if err := pipeDistinct.One(&bson.M{"count": &qFails.Total}); err != nil && err != mgo.ErrNotFound {
+  countResults := struct{Count uint}{}
+  if err := pipeDistinct.One(&countResults); err != nil && err != mgo.ErrNotFound {
       jsonhttp.Error(w, err.Error(), http.StatusInternalServerError)
-      //jsonhttp.Error(w, "Database find error", http.StatusInternalServerError)
-      return
   }
+  qFails.Total = countResults.Count
 
   if (qFails.Total > qFails.Offset) {
 
