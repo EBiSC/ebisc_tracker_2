@@ -6,7 +6,7 @@ use LWP::UserAgent;
 use strict;
 use warnings;
 
-has 'base_url' => (is => 'rw', isa => 'Str', default => 'https://www.ebi.ac.uk/biosamplesbeta/api');
+has 'base_url' => (is => 'rw', isa => 'Str', default => 'https://www.ebi.ac.uk/biosamples/api');
 has 'ua' => (is => 'ro', isa => 'LWP::UserAgent', lazy => 1, default => sub {return LWP::UserAgent->new;});
 
 sub get_sample {
