@@ -49,7 +49,7 @@ export class RouteDateService {
 
   // public methods
   getDate(): string {
-    return this.bottomActivatedRoute.snapshot.params["date"]
+    return this.bottomActivatedRoute ? this.bottomActivatedRoute.snapshot.params["date"] : null;
   }
   getBottomActivatedRoute(): ActivatedRoute {
     return this.bottomActivatedRoute;
