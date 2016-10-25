@@ -1,0 +1,15 @@
+<div *ngIf="qTimeline?.items">
+<h3>Timeline of this question</h3>
+<div class="date-table center-block">
+<table class="table table-striped table-hover table-responsive">
+<thead><tr>
+  <th>Date</th><th>Num failed</th><th>Num Tested</th>
+</tr></thead>
+<tbody><tr *ngFor="let qEvent of qTimeline?.items" >
+  <td><a [routerLink]="['/question', questionModule, {date: qEvent.date}]">{{qEvent.date}}</a></td>
+  <td>{{qEvent.numFailed}}</td>
+  <td>{{qEvent.numTested}}</td>
+</tr></tbody>
+</table>
+</div>
+</div>
