@@ -13,14 +13,12 @@ import (
 var endpointQFails = "/exams/{date}/fails"
 
 type qFailsForm struct {
-  Limit uint          `form:"limit"`
-  Offset uint         `form:"offset"`
-  MgoQuery struct {
-    Date *time.Time   `path:"date"      bson:"date,omitempty"`
-    CellLine *string  `form:"cell_line" bson:"cellLine,omitempty"`
-    Batch *string     `form:"batch"     bson:"batch,omitempty"`
-    Module *string    `form:"module"    bson:"module,omitempty"`
-  }                   `form:",inline"   path:",inline"`
+  Limit uint        `form:"limit"     bson:"-"`
+  Offset uint       `form:"offset"    bson:"-"`
+  Date *time.Time   `path:"date"      bson:"date,omitempty"`
+  CellLine *string  `form:"cell_line" bson:"cellLine,omitempty"`
+  Batch *string     `form:"batch"     bson:"batch,omitempty"`
+  Module *string    `form:"module"    bson:"module,omitempty"`
 }
 
 func handleQFails (s *mgo.Session) http.Handler {
@@ -49,7 +47,7 @@ func (h *qFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
   defer session.Close()
   c := session.DB("ebisc").C("question_fail")
 
-  query := c.Find(opts.MgoQuery);
+  query := c.Find(opts);
 
   qFails := listResponse{
     Offset: opts.Offset,

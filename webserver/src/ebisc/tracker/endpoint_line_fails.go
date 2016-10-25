@@ -13,12 +13,10 @@ import (
 var endpointLineFails = "/exams/{date}/line_fails"
 
 type lineFailsForm struct {
-  Limit uint          `form:"limit"`
-  Offset uint         `form:"offset"`
-  mgoQuery struct {
-    Date *time.Time   `path:"date"      bson:"date,omitempty"`
-    Module *string    `form:"module"    bson:"module,omitempty"`
-  }                   `form:",inline"   path:",inline"`
+  Limit uint        `form:"limit" bson:"-"`
+  Offset uint       `form:"offset" bson:"-"`
+  Date *time.Time   `path:"date"      bson:"date,omitempty"`
+  Module *string    `form:"module"    bson:"module,omitempty"`
 }
 
 func handleLineFails (s *mgo.Session) http.Handler {
@@ -30,7 +28,6 @@ type lineFailsHandler struct {
 }
 
 func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-  //opts := &lineFailsForm{ Limit: 100 }
   opts := &lineFailsForm{ Limit: 100 }
   if err := optshttp.UnmarshalForm(req, opts); err != nil {
     jsonhttp.Error(w, err.Error(), http.StatusBadRequest)
@@ -53,15 +50,7 @@ func (h *lineFailsHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
     Limit: opts.Limit,
   }
 
-
-  if n, err := c.Find(opts.mgoQuery).Count(); err != nil {
-    jsonhttp.Error(w, "Database error", http.StatusInternalServerError)
-    return
-  } else {
-    qFails.Total = uint(n)
-  }
-
-  o1 := bson.M{"$match": opts.mgoQuery}
+  o1 := bson.M{"$match": opts}
   oDistinct2 := bson.M{"$group": bson.M{"_id": "$cellLine"}}
   oDistinct3 := bson.M{"$group": bson.M{"_id": nil, "count": bson.M{"$sum": 1}}}
   operationsDistinct := []bson.M{o1,oDistinct2, oDistinct3}
