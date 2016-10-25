@@ -11,7 +11,7 @@ import (
 )
 
 
-var endpointQFailsTimeline = "/fails/{module}"
+var endpointQFailsTimeline = "/questions/{module}"
 
 type qFailsTimelineForm struct {
   Limit uint         `form:"limit"`
