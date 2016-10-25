@@ -26,14 +26,14 @@ sub run {
   my ($self) = @_;
 
   my $cursor = $self->db->biosample_group->c->find(
-    {'obj.characteristics.OriginCellLine' => {'$exists' => boolean::true}},
-    {projection => {'biosample_id' => 1, 'vial_derived_from' => 1, 'obj.characteristics.OriginCellLine.text' => 1}},
+    {'obj.characteristics.originCellLine' => {'$exists' => boolean::true}},
+    {projection => {'biosample_id' => 1, 'vial_derived_from' => 1, 'obj.characteristics.originCellLine.text' => 1}},
   );
   my $num_tested = 0;
   LINE:
   while (my $next = $cursor->next) {
     $num_tested += 1;
-    my $origin_cell_line = $next->{obj}{characteristics}{OriginCellLine}[0]{text};
+    my $origin_cell_line = $next->{obj}{characteristics}{originCellLine}[0]{text};
     next LINE if $next->{vial_derived_from} && $next->{vial_derived_from} eq $origin_cell_line;
     my $ims_cursor = $self->db->ims_line->c->find(
       {'obj.batches.biosamples_id' => $next->{biosample_id}},

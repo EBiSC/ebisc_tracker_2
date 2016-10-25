@@ -34,12 +34,12 @@ sub run {
     foreach my $id ( map {$_->{biosamples_id}} @{$next->{obj}{batches}}) {
       my $biosamples_doc = $self->db->biosample_group->c->find_one(
         {biosample_id => $id},
-        {'obj.characteristics.OriginCellLine.text' => 1},
+        {'obj.characteristics.originCellLine.text' => 1},
       );
       next ID if !$biosamples_doc;
       $num_tested += 1;
       my ($pass, $fail) = (0,0);
-      foreach my $char (@{$biosamples_doc->{obj}{characteristics}{OriginCellLine}}) {
+      foreach my $char (@{$biosamples_doc->{obj}{characteristics}{originCellLine}}) {
         if ($char->{text} && $char->{text} eq $next->{obj}{biosamples_id}) {
           $pass = 1;
         }
