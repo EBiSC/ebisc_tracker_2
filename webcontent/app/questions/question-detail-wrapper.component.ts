@@ -18,7 +18,8 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
   exam: Exam;
 
   // private properties
-  private routeSubscription: Subscription = null;
+  private routeParamsSubscription: Subscription = null;
+  private routeDataSubscription: Subscription = null;
   private examSource: Subject<Observable<Exam>>;
   private examSubscription: Subscription = null;
   
@@ -32,17 +33,23 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
     this.examSubscription = this.examSource
         .switchMap((o: Observable<Exam>):Observable<Exam> => o)
         .subscribe((e:Exam) => this.exam = e );
-    this.routeSubscription =
+    this.routeParamsSubscription =
       this.activatedRoute.params.subscribe((params: {qModule: string}) => {
-        this.date = this.activatedRoute.snapshot.data["date"];
         this.questionModule = params.qModule;
-        this.examSource.next(this.apiExamService.getExam(this.date));
       });
+    this.routeDataSubscription = 
+      this.activatedRoute.data.subscribe(data => {
+        this.date = data["date"];
+        this.examSource.next(this.apiExamService.getExam(this.date));
+    })
   };
 
   ngOnDestroy() {
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
+    if (this.routeParamsSubscription) {
+      this.routeParamsSubscription.unsubscribe();
+    }
+    if (this.routeDataSubscription) {
+      this.routeDataSubscription.unsubscribe();
     }
     if (this.examSubscription) {
       this.examSubscription.unsubscribe();
