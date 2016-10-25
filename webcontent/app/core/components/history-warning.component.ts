@@ -53,7 +53,7 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
   }
 
   exitHistoryMode() {
-    this.router.navigate([{date: 'latest'}]);
+    this.router.navigate([{date: 'latest'}], {relativeTo: this.routeDateService.getBottomActivatedRoute()});
   }
 
 }

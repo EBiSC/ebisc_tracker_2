@@ -14,7 +14,7 @@ export class RouteDateService {
   readonly resolvedDate$: Observable<string>;
 
   // private properties
-  private dateSnapshot: string
+  private bottomActivatedRoute: ActivatedRoute
   private dateSource: ReplaySubject<string>;
   private resolvedDateSource: ReplaySubject<Observable<Exam>>;
 
@@ -32,10 +32,11 @@ export class RouteDateService {
         .switchMap(o => o).map((e: Exam) => e.date);
 
       router.events.filter(event => event instanceof NavigationEnd)
-        .map(event => this.inspectRouter())
-        .subscribe(date => {
-          this.dateSnapshot = date;
-          this.dateSource.next(date)
+        .map(event => this.descendRouter())
+        .subscribe(route => {
+            let date = route.snapshot.params["date"];
+            this.dateSource.next(date);
+            this.bottomActivatedRoute = route;
         });
 
       this.dateSource.subscribe(date => {
@@ -48,34 +49,34 @@ export class RouteDateService {
 
   // public methods
   getDate(): string {
-    return this.dateSnapshot;
+    return this.bottomActivatedRoute.snapshot.params["date"]
+  }
+  getBottomActivatedRoute(): ActivatedRoute {
+    return this.bottomActivatedRoute;
   }
 
   linkParams(o: {[s:string]: string}): {[s:string]:string} {
-    let date = this.dateSnapshot;
+    let date = this.getDate();
     if (date && date !== 'latest') {
       o['date'] = date;
     }
     return o;
   }
 
-  // private methods
-  private inspectRouter(): string {
-    let route = this.activatedRoute.root;
-    while (route && route.snapshot) {
-      let snapshot = route.snapshot;
-      if (snapshot.params["date"]) {
-        return snapshot.params["date"];
-      }
-      let children = route.children;
-      route = null;
+  private descendRouter(): ActivatedRoute {
+    let candidateRoute = this.activatedRoute.root;
+    let chosenRoute = candidateRoute
+    while (candidateRoute) {
+      let children = candidateRoute.children
+      candidateRoute = null;
       children.forEach(child => {
         if (child.outlet === 'primary') {
-          route = child;
+          candidateRoute = child;
+          chosenRoute = child;
         }
       });
     }
-    return null;
+    return chosenRoute;
   }
 
 };
