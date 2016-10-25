@@ -16,6 +16,8 @@ sub sync_db {
     date => $options{now},
     obj => $next->{obj},
     });
+    die "Database insert error" if !$res->acknowledged;
+    $res->assert;
   }
 }
 

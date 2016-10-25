@@ -31,8 +31,6 @@ sub _build_client {
      password => $self->pass,
      username => $self->user,
      db_name => $self->db_name,
-     read_concern_level => 'majority',
-     w => 'majority',
   });
 };
 

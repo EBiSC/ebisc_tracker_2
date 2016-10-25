@@ -27,30 +27,64 @@ my $db = EBiSC::MongoDB->new(
   user => $ENV{MONGODB_USER},
 );
 
-EBiSC::Utils::IMS::sync_db(
-  api => $ims_api,
-  db => $db,
-);
+my @service_errors;
 
-EBiSC::Utils::hPSCreg::sync_db(
-  api => $hpscreg_api,
-  db => $db,
-);
+eval {
+  EBiSC::Utils::IMS::sync_db(
+    api => $ims_api,
+    db => $db,
+  );
+};
+if ($@) {
+  push(@service_errors, {service => 'IMS', error => $@});
+}
 
-EBiSC::Utils::Biosamples::sync_db(
-  api => EBiSC::API::Biosamples->new(),
-  db => $db,
-);
+eval {
+  EBiSC::Utils::hPSCreg::sync_db(
+    api => $hpscreg_api,
+    db => $db,
+  );
+};
+if ($@) {
+  push(@service_errors, {service => 'hPSCreg', error => $@});
+}
 
-EBiSC::Utils::ECACC::sync_db(
-  api => EBiSC::API::ECACC->new(),
-  db => $db,
-);
+eval {
+  EBiSC::Utils::Biosamples::sync_db(
+    api => EBiSC::API::Biosamples->new(),
+    db => $db,
+  );
+};
+if ($@) {
+  push(@service_errors, {service => 'Biosamples', error => $@});
+}
 
-$db->exam->ensure_indexes;
-$db->question_fail->ensure_indexes;
-$db->question_module->ensure_indexes;
+eval {
+  EBiSC::Utils::ECACC::sync_db(
+    api => EBiSC::API::ECACC->new(),
+    db => $db,
+  );
+};
+if ($@) {
+  push(@service_errors, {service => 'ECACC', error => $@});
+}
 
-EBiSC::Utils::Question::run_questions(
+eval {
+  $db->exam->ensure_indexes;
+  $db->question_fail->ensure_indexes;
+  $db->question_module->ensure_indexes;
+};
+if ($@) {
+  push(@service_errors, {service => 'ECACC', error => $@});
+}
+
+my $exam = EBiSC::Utils::Question::run_questions(
   db => $db
+);
+
+$exam->{serviceErrors} = \@service_errors;
+
+EBiSC::Utils::Question::commit_exam (
+  db => $db,
+  exam => $exam,
 );

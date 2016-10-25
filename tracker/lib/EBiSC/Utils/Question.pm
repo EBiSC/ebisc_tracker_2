@@ -31,11 +31,16 @@ sub run_questions {
       push(@failed_modules, $module);
     }
   }
-  $options{db}->exam->c->insert({
+  return {
     date => $options{now},
     questions => \@results,
     failedModules => \@failed_modules,
-  });
+  };
+}
+
+sub commit_exam {
+  my (%options) = @_;
+  $options{db}->exam->c->insert($options{exam});
 }
 
 sub run_module {
@@ -68,7 +73,9 @@ sub run_module {
   foreach my $fail (@{$questioner->failed_items}) {
     $fail->{module} = $options{module},
     $fail->{date} = $options{now},
-    $db->question_fail->c->insert_one($fail);
+    my $res = $db->question_fail->c->insert_one($fail);
+    die "Database insert error" if !$res->acknowledged;
+    $res->assert;
   }
 
   return {

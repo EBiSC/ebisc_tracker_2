@@ -22,6 +22,8 @@ sub sync_db {
       date => $options{now},
       obj => $obj,
       });
+      die "Database insert error" if !$res->acknowledged;
+      $res->assert;
       $processed_ids{$id} = 1;
     }
   }
@@ -38,6 +40,8 @@ sub sync_db {
       date => $options{now},
       obj => $obj,
       });
+      die "Database insert error" if !$res->acknowledged;
+      $res->assert;
       $processed_ids{$id} = 1;
     }
     ID:
@@ -59,6 +63,8 @@ sub sync_db {
       vial_derived_from => $vial_derived_from,
       obj => $obj,
       });
+      die "Database insert error" if !$res->acknowledged;
+      $res->assert;
       $processed_ids{$id} = 1;
 
       

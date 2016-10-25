@@ -16,6 +16,8 @@ sub sync_db {
     obj => $next,
     name => $next->{name},
     });
+    die "Database insert error" if !$res->acknowledged;
+    $res->assert;
   }
 }
 

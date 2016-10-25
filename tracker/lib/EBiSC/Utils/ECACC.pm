@@ -18,10 +18,12 @@ sub sync_db {
     {projection => {'name' => 1, 'obj.ecacc_cat_no' => 1}}
   );
   while (my $next = $cursor->next) {
-    $db->ecacc_line->c->insert_one({
+    my $res = $db->ecacc_line->c->insert_one({
       name => $next->{name},
       exported => $api->get_sample($next->{obj}{ecacc_cat_no}),
     });
+    die "Database insert error" if !$res->acknowledged;
+    $res->assert;
   }
 }
 
