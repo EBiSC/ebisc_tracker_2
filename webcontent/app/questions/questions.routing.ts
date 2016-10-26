@@ -3,13 +3,16 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { QuestionDetailWrapperComponent } from './question-detail-wrapper.component';
 import { QuestionListComponent } from './question-list.component';
+import { DateComponent } from '../core/components/date.component';
 import { DateResolver } from '../core/services/date-resolver.service';
 
 const questionsRoutes: Routes = [
-  {path: 'question', redirectTo: 'questions'},
-  {path: 'questions', data: {breadcrumb: "Questions"}, children: [
-    {path: '', component: QuestionListComponent, resolve: {date: DateResolver}},
-    {path: ':qModule', component: QuestionDetailWrapperComponent, resolve: {date: DateResolver}},
+  { path: 'd', component: DateComponent, resolve: {date: DateResolver}, children: [
+    {path: 'question', redirectTo: 'questions'},
+    {path: 'questions', data: {breadcrumb: "Questions"}, children: [
+      {path: '', component: QuestionListComponent},
+      {path: ':qModule', component: QuestionDetailWrapperComponent},
+    ]},
   ]},
 ];
 

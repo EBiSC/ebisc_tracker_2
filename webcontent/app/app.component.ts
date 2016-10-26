@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 
-import { HistoryModeEnabledService } from './core/services/history-mode-enabled.service';
+import { ApiExamService } from './core/services/api-exam.service';
+import { RouteDateService } from './core/services/route-date.service';
 
 const bodyBackgroundStyles: string = `
   :host(.history-mode) {
@@ -20,20 +21,39 @@ export class AppComponent implements OnInit, OnDestroy{
   historyModeEnabled: boolean = false;
 
   // private properties
-  private historyEnabledSubscription: Subscription = null;
+  private routeDateSubscription: Subscription = null;
+  private currentDate: string;
+  private latestDate: string;
 
   constructor(
-    private historyModeEnabledService: HistoryModeEnabledService,
+    private apiExamService: ApiExamService,
+    private routeDateService: RouteDateService,
   ) {};
 
   ngOnInit() {
-    this.historyEnabledSubscription = this.historyModeEnabledService.enabled$
-      .subscribe((enabled: boolean) => this.historyModeEnabled = enabled);
+    this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => {
+      this.latestDate = exam.date;
+      this.changeMode();
+    });
+
+    this.routeDateService.date$.subscribe((date:string) => {
+      this.currentDate = date;
+      this.changeMode();
+    });
+  }
+
+  changeMode() {
+    if (this.latestDate && this.currentDate && this.latestDate != this.currentDate) {
+      this.historyModeEnabled = true;
+    }
+    else {
+      this.historyModeEnabled = false;
+    }
   }
 
   ngOnDestroy() {
-    if (this.historyEnabledSubscription) {
-      this.historyEnabledSubscription.unsubscribe();
+    if (this.routeDateSubscription) {
+      this.routeDateSubscription.unsubscribe();
     }
   }
 

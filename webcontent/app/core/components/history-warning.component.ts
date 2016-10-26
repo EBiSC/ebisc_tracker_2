@@ -1,50 +1,45 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnChanges, OnDestroy, Input, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { ApiExamService } from '../services/api-exam.service';
-import { RouteDateService } from '../services/route-date.service';
-import { HistoryModeEnabledService } from '../services/history-mode-enabled.service';
 
 @Component({
     selector: 'history-warning',
     templateUrl: './history-warning.component.html',
 })
-export class HistoryWarningComponent implements OnInit, OnDestroy{
+export class HistoryWarningComponent implements OnChanges, OnDestroy{
+  @Input() currentDate: string;
 
   // public properties
-  currentDate: string;
   latestDate: string;
   showWarning: boolean;
 
   // private properties
-  private routeSubscription: Subscription = null;
-  private historyEnabledSubscription: Subscription = null;
+  private subscription: Subscription = null;
 
   constructor(
     private apiExamService: ApiExamService,
-    private routeDateService: RouteDateService,
-    private historyModeEnabledService: HistoryModeEnabledService,
     private router: Router,
   ){};
 
-  ngOnInit() {
-    this.routeSubscription =
-      this.routeDateService.resolvedDate$.subscribe((date: string) => this.currentDate = date);
-
-    this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => this.latestDate = exam.date);
-
-    this.historyEnabledSubscription = this.historyModeEnabledService.enabled$
-      .subscribe((enabled: boolean) => this.showWarning = enabled);
-
+  ngOnChanges(changes: SimpleChanges) {
+    if (! this.subscription) {
+      this.subscription =
+        this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => {
+          this.latestDate = exam.date;
+          this.changeMode();
+        });
+    }
+    this.changeMode();
   }
 
-  ngOnDestroy() {
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
+  changeMode() {
+    if (this.latestDate && this.currentDate && this.latestDate != this.currentDate) {
+      this.showWarning = true;
     }
-    if (this.historyEnabledSubscription) {
-      this.historyEnabledSubscription.unsubscribe();
+    else {
+      this.showWarning = false;
     }
   }
 
@@ -53,7 +48,13 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
   }
 
   exitHistoryMode() {
-    this.router.navigate([{date: 'latest'}], {relativeTo: this.routeDateService.getBottomActivatedRoute()});
+    this.router.navigate([{}]);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 }

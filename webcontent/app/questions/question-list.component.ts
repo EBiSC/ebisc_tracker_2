@@ -33,7 +33,6 @@ export class QuestionListComponent implements OnInit, OnDestroy{
   
   constructor(
     private apiExamService: ApiExamService,
-    private activatedRoute: ActivatedRoute,
     private routeDateService: RouteDateService,
   ){};
 
@@ -43,8 +42,8 @@ export class QuestionListComponent implements OnInit, OnDestroy{
         .switchMap((o: Observable<Exam>):Observable<Exam> => o)
         .subscribe((e:Exam) => this.exam = e );
     this.routeSubscription =
-      this.activatedRoute.data.subscribe((data: {date: string}) => {
-        this.date = data.date;
+      this.routeDateService.date$.subscribe((date: string) => {
+        this.date = date;
         this.examSource.next(this.apiExamService.getExam(this.date));
       });
   };
@@ -56,9 +55,5 @@ export class QuestionListComponent implements OnInit, OnDestroy{
     if (this.examSubscription) {
       this.examSubscription.unsubscribe();
     }
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 };

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
+import { ActivatedRoute, Router } from'@angular/router';
 
 import { ExamList } from '../shared/exam-list';
 import { ApiExamService } from '../core/services/api-exam.service';
@@ -27,6 +28,7 @@ export class DateChooserComponent implements OnInit {
 
   constructor(
     private apiExamService: ApiExamService,
+    private router: Router,
   ){};
 
   ngOnInit() {
@@ -55,5 +57,9 @@ export class DateChooserComponent implements OnInit {
         }
         this.isLoading = false;
       });
+  }
+
+  changeDate(date:string) {
+    this.router.navigate(['../', {date: date}, 'dates']);
   }
 };

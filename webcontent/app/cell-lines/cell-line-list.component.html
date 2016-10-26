@@ -15,7 +15,7 @@
   <th></th><th>Cell line</th><th>Questions failed</th>
 </tr></thead>
 <tbody><tr *ngFor="let lineFail of lineFailList?.items; let i=index;"
-  class="clickable" [routerLink]="['/cell-line', lineFail.cellLine, linkParams()]">
+  class="clickable" [routerLink]="[lineFail.cellLine]">
 <td>{{i + lineFailsOffset +1}}</td>
 <td><a>{{lineFail.cellLine}}</a></td><td>{{lineFail.modules.length}}</td>
 </tr></tbody>

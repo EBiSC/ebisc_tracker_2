@@ -19,6 +19,9 @@ export class ApiExamService {
   // public methods
 
   public getExam(date: string): Observable<Exam>{
+    if (!date) {
+      return this.getLatestExam();
+    }
     if (this.examObservables[date]) {
       return this.examObservables[date];
     }

@@ -22,6 +22,7 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
 
   // private properties
   private routeSubscription: Subscription = null;
+  private dateSubscription: Subscription = null;
   private failListSource: Subject<Observable<FailList>>;
   private failListSubscription: Subscription = null;
   
@@ -40,14 +41,22 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
 
     this.routeSubscription =
       this.activatedRoute.params.subscribe((params: {cellLine: string}) => {
-        this.date = this.activatedRoute.snapshot.data["date"];
         this.cellLine = params.cellLine;
+        this.failsOffset = 0;
+        this.getLineFailList();
+      });
+    this.dateSubscription =
+      this.routeDateService.date$.subscribe((date: string) => {
+        this.date = date;
         this.failsOffset = 0;
         this.getLineFailList();
       });
   };
 
   ngOnDestroy() {
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
+    }
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
     }
@@ -57,8 +66,10 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
   }
 
   getLineFailList() {
-    this.failListSource.next(this.apiFailsService
-      .search(this.date, {cell_line: this.cellLine, offset: this.failsOffset}));
+    if (this.cellLine && this.date) {
+      this.failListSource.next(this.apiFailsService
+        .search(this.date, {cell_line: this.cellLine, offset: this.failsOffset}));
+    }
   }
 
   tableNext() {
@@ -78,9 +89,5 @@ export class CellLineDetailComponent implements OnInit, OnDestroy {
       return true;
     }
     return false;
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 };

@@ -6,7 +6,7 @@
   <th>Date</th><th>Num failed</th><th>Num Tested</th>
 </tr></thead>
 <tbody><tr *ngFor="let qEvent of qTimeline?.items" >
-  <td><a [routerLink]="['/question', questionModule, {date: qEvent.date}]">{{qEvent.date | prettyDate }}</a></td>
+  <td><a (click)="changeDate(qEvent.date)">{{qEvent.date | prettyDate }}</a></td>
   <td>{{qEvent.numFailed}}</td>
   <td>{{qEvent.numTested}}</td>
 </tr></tbody>

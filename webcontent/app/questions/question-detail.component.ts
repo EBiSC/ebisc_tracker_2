@@ -10,7 +10,6 @@ import { Fail } from '../shared/fail';
 import { FailList } from '../shared/fail-list';
 import { Question } from '../shared/question';
 import { ApiFailsService } from '../core/services/api-fails.service';
-import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
     selector: 'question-detail',
@@ -38,7 +37,6 @@ export class QuestionDetailComponent implements OnDestroy, OnChanges{
 
   constructor(
     private apiFailsService: ApiFailsService,
-    private routeDateService: RouteDateService,
   ){ };
 
   initFailListSource() {
@@ -104,9 +102,5 @@ export class QuestionDetailComponent implements OnDestroy, OnChanges{
       return true;
     }
     return false;
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 };

@@ -38,10 +38,10 @@ export class QuestionDetailWrapperComponent implements OnInit, OnDestroy{
         this.questionModule = params.qModule;
       });
     this.routeDataSubscription = 
-      this.activatedRoute.data.subscribe(data => {
-        this.date = data["date"];
+      this.activatedRoute.data.subscribe((data: {date: string}) => {
+        this.date = data.date;
         this.examSource.next(this.apiExamService.getExam(this.date));
-    })
+      });
   };
 
   ngOnDestroy() {

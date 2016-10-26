@@ -4,7 +4,7 @@
 <div class="dates-table center-block">
 
 <table class="table table-striped table-hover table-responsive">
-<tbody><tr *ngFor="let exam of exams" class="clickable" [routerLink]="['/home', {date: exam.date}]">
+<tbody><tr *ngFor="let exam of exams" class="clickable" (click)="changeDate(exam.date)">
   <td class="text-center"><a>{{exam.date | prettyDate }}</a></td>
 </tr></tbody>
 </table>

@@ -7,6 +7,7 @@ import 'rxjs/add/observable/empty';
 
 import { QuestionTimeline } from '../shared/question-timeline';
 import { ApiQuestionTimelineService } from '../core/services/api-question-timeline.service';
+import { RouteDateService } from '../core/services/route-date.service';
 
 @Component({
     selector: 'question-timeline',
@@ -29,6 +30,7 @@ export class QuestionTimelineComponent implements OnDestroy, OnChanges{
 
   constructor(
     private apiQuestionTimelineService: ApiQuestionTimelineService,
+    private routeDateService: RouteDateService,
   ){ };
 
   ngOnDestroy() {
@@ -51,4 +53,8 @@ export class QuestionTimelineComponent implements OnDestroy, OnChanges{
       this.qTimelineSource.next(Observable.empty<QuestionTimeline>());
     }
   };
+
+  changeDate(date:string) {
+    this.routeDateService.nextDate(date);
+  }
 };

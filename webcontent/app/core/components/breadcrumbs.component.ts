@@ -24,7 +24,6 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy{
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private routeDateService: RouteDateService,
   ) {};
 
   ngOnInit(): void {
@@ -73,10 +72,6 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy{
       });
     }
 
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 
 }

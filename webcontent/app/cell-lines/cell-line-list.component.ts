@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
@@ -30,11 +29,10 @@ export class CellLineListComponent implements OnInit, OnDestroy{
   // private properties
   private lineFailListSource: Subject<Observable<LineFailList>>;
   private lineFailListSubscription: Subscription = null;
-  private routeSubscription: Subscription = null;
+  private dateSubscription: Subscription = null;
   
   constructor(
     private apiLineFailsService: ApiLineFailsService,
-    private activatedRoute: ActivatedRoute,
     private routeDateService: RouteDateService,
   ){ };
 
@@ -46,17 +44,17 @@ export class CellLineListComponent implements OnInit, OnDestroy{
         .switchMap((o: Observable<LineFailList>):Observable<LineFailList> => o)
         .subscribe((l:LineFailList) => this.lineFailList = l );
 
-    this.routeSubscription =
-      this.activatedRoute.data.subscribe((data: {date: string}) => {
-        this.date = data.date;
+    this.dateSubscription =
+      this.routeDateService.date$.subscribe((date: string) => {
+        this.date = date;
         this.lineFailsOffset = 0;
         this.getLineFailList();
       });
   };
 
   ngOnDestroy() {
-    if (this.routeSubscription) {
-      this.routeSubscription.unsubscribe();
+    if (this.dateSubscription) {
+      this.dateSubscription.unsubscribe();
     }
   }
 
@@ -82,9 +80,5 @@ export class CellLineListComponent implements OnInit, OnDestroy{
       return true;
     }
     return false;
-  }
-
-  linkParams(): {[s:string]: string} {
-    return this.routeDateService.linkParams({});
   }
 };
