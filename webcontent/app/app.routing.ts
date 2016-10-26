@@ -2,17 +2,21 @@ import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { PageNotFoundComponent } from './core/components/page-not-found.component';
-import { DateComponent } from './core/components/date.component';
+import { DateOutletComponent } from './core/components/date-outlet.component';
+import { LatestDateComponent } from './core/components/latest-date.component';
 import { HomeComponent } from './core/components/home.component';
 import { DateResolver } from './core/services/date-resolver.service';
 
 const appRoutes: Routes = [
-  { path: 'd', component: DateComponent, resolve: {date: DateResolver}, children: [
-    { path: '', pathMatch: 'full', redirectTo: 'home' },
-    { path: 'home', component: HomeComponent },
-    { path: '**', component: PageNotFoundComponent },
-  ]},
-  { path: '', pathMatch: 'prefix', redirectTo: 'd' },
+
+  { outlet: 'date', path: '', pathMatch: 'prefix', component: LatestDateComponent },
+  { outlet: 'date', path: 'latest', component: LatestDateComponent },
+  { outlet: 'date', path: ':date', component: DateOutletComponent },
+  { outlet: 'date', path: '**', redirectTo: 'latest' },
+
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
+  { path: 'home', component: HomeComponent },
+  { path: '**', component: PageNotFoundComponent },
 ];
 
 export const appRoutingProviders: any[] = [];

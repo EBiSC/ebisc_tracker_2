@@ -60,6 +60,6 @@ export class DateChooserComponent implements OnInit {
   }
 
   changeDate(date:string) {
-    this.router.navigate(['../', {date: date}, 'dates']);
+    this.router.navigate([{outlets: {date: ['/', date]}}]);
   }
 };

@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnDestroy, Input, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { ApiExamService } from '../services/api-exam.service';
@@ -21,6 +21,7 @@ export class HistoryWarningComponent implements OnChanges, OnDestroy{
   constructor(
     private apiExamService: ApiExamService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
   ){};
 
   ngOnChanges(changes: SimpleChanges) {
@@ -45,10 +46,6 @@ export class HistoryWarningComponent implements OnChanges, OnDestroy{
 
   dismiss() {
     this.showWarning = false;
-  }
-
-  exitHistoryMode() {
-    this.router.navigate([{}]);
   }
 
   ngOnDestroy() {

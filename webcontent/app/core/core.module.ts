@@ -8,7 +8,8 @@ import { ApiErrorComponent }  from './components/api-error.component';
 import { HistoryWarningComponent }  from './components/history-warning.component';
 import { PageNotFoundComponent }  from './components/page-not-found.component';
 import { HomeComponent }  from './components/home.component';
-import { DateComponent }  from './components/date.component';
+import { DateOutletComponent }  from './components/date-outlet.component';
+import { LatestDateComponent }  from './components/latest-date.component';
 import { BreadcrumbsComponent }  from './components/breadcrumbs.component';
 
 import { ApiExamService }  from './services/api-exam.service';
@@ -21,9 +22,9 @@ import { DateResolver }  from './services/date-resolver.service';
 
 @NgModule({
   imports: [ SharedModule, CommonModule, RouterModule ],
-  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent, DateComponent ],
+  declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent, DateOutletComponent, LatestDateComponent ],
   providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, ApiQuestionTimelineService, RouteDateService, DateResolver ],
-  exports: [ ApiErrorComponent, BreadcrumbsComponent, DateComponent ],
+  exports: [ ApiErrorComponent, BreadcrumbsComponent, DateOutletComponent, LatestDateComponent ],
 })
 export class CoreModule { 
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

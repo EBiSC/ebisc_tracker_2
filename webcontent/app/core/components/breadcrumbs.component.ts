@@ -2,8 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Route, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
-import { RouteDateService } from '../services/route-date.service';
-
 class Breadcrumb{
   url: string
   label: string
@@ -12,6 +10,9 @@ class Breadcrumb{
 @Component({
     selector: 'app-breadcrumbs',
     templateUrl: './breadcrumbs.component.html',
+    styles: [`
+      a.clickable:hover {cursor: pointer; text-decoration: underline;}
+      `],
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy{
 
@@ -71,7 +72,18 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy{
         }
       });
     }
+  }
 
+  changeUrl(url:string) {
+    this.activatedRoute.root.children.forEach(route => {
+      if (route.outlet === 'primary') {
+        let urlTree = this.router.createUrlTree([url], {relativeTo: route});
+        console.log(urlTree);
+        this.router.navigateByUrl(urlTree);
+      }
+    });
   }
 
 }
+    //<a (click)="changeUrl(breadcrumb.url) clickable">{{breadcrumb.label}}</a>
+    //<a [routerLink]="[breadcrumb.url]">{{breadcrumb.label}}</a>

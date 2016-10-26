@@ -1,10 +1,11 @@
 <div class="alert alert-info" role="alert" *ngIf="showWarning">
   <button (click)="dismiss()" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
   <h2 class="text-center"><strong>History mode enabled</strong></h2>
   <p>This means you are not looking at the most recent set of questions</p>
   <ul>
   <li>You are viewing questions asked at {{currentDate | prettyDate }}</li>
   <li>The most recent questions were asked at {{latestDate | prettyDate }}</li>
   </ul>
-  <p><button (click)="exitHistoryMode()" class="btn btn-primary center-block" ><span class="glyphicon glyphicon-exit" aria-hidden="true"></span> Click to exit history mode</button></p>
+  <p><button class="btn btn-primary center-block" [routerLink]="['/']"><span class="glyphicon glyphicon-exit" aria-hidden="true"></span> Click to exit history mode</button></p>
 </div>

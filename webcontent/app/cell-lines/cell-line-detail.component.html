@@ -12,7 +12,7 @@
   <td>{{i + failsOffset +1}}</td>
   <td>{{fail.cellLine}}</td>
   <td>{{fail.batch || 'N/A'}}</td>
-  <td><a [routerLink]="[fail.module]">{{fail.module}}</a></td>
+  <td><a [routerLink]="['/questions', fail.module]">{{fail.module}}</a></td>
 </tr></tbody>
 </table>
 </div>
