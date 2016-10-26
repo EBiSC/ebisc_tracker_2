@@ -7,5 +7,5 @@
   <li>You are viewing questions asked at {{currentDate | prettyDate }}</li>
   <li>The most recent questions were asked at {{latestDate | prettyDate }}</li>
   </ul>
-  <p><button class="btn btn-primary center-block" [routerLink]="['/']"><span class="glyphicon glyphicon-exit" aria-hidden="true"></span> Click to exit history mode</button></p>
+  <p><button class="btn btn-primary center-block" (click)="leaveHistoryMode()"><span class="glyphicon glyphicon-exit" aria-hidden="true"></span> Click to exit history mode</button></p>
 </div>

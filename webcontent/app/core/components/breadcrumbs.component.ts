@@ -74,16 +74,4 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy{
     }
   }
 
-  changeUrl(url:string) {
-    this.activatedRoute.root.children.forEach(route => {
-      if (route.outlet === 'primary') {
-        let urlTree = this.router.createUrlTree([url], {relativeTo: route});
-        console.log(urlTree);
-        this.router.navigateByUrl(urlTree);
-      }
-    });
-  }
-
 }
-    //<a (click)="changeUrl(breadcrumb.url) clickable">{{breadcrumb.label}}</a>
-    //<a [routerLink]="[breadcrumb.url]">{{breadcrumb.label}}</a>

@@ -29,6 +29,7 @@ export class DateChooserComponent implements OnInit {
   constructor(
     private apiExamService: ApiExamService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
   ){};
 
   ngOnInit() {
@@ -60,6 +61,7 @@ export class DateChooserComponent implements OnInit {
   }
 
   changeDate(date:string) {
-    this.router.navigate([{outlets: {date: ['/', date]}}]);
+    let urlTree = this.router.createUrlTree([{outlets:{date:date}}]);
+    this.router.navigateByUrl(urlTree, {relativeTo: this.activatedRoute});
   }
 };
