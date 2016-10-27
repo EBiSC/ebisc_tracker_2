@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from'@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { RouteDateService } from '../services/route-date.service';
-import { ApiExamService } from '../services/api-exam.service';
 
 @Component({ 
     template: '',
@@ -12,43 +11,35 @@ export class DateOutletComponent implements OnInit, OnDestroy{
   
   // private properties
   private routeSubscription: Subscription = null;
-  date: string;
-  latestDate: string;
+  private isLatestSubscription: Subscription = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private routeDateService: RouteDateService,
-    private apiExamService: ApiExamService,
   ){ };
 
   ngOnInit() {
-    this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => {
-      this.latestDate = exam.date;
-      this.setDates();
-    });
     this.routeSubscription =
       this.activatedRoute.params.subscribe((params: {date: string}) => {
-        this.date = params.date;
-        this.setDates();
+        this.routeDateService.nextDate(params.date);
+      });
+    this.isLatestSubscription =
+      this.routeDateService.isLatest$.subscribe((isLatest: boolean) => {
+        if (isLatest) {
+          let urlTree = this.router.createUrlTree([{outlets:{date:null}}]);
+          this.router.navigateByUrl(urlTree, {relativeTo: this.activatedRoute});
+        }
       });
   }
 
-  setDates() {
-    if (this.date) {
-      if (this.latestDate && this.latestDate == this.date) {
-        let urlTree = this.router.createUrlTree([{outlets:{date:null}}]);
-        this.router.navigateByUrl(urlTree, {relativeTo: this.activatedRoute});
-      }
-      else {
-        this.routeDateService.nextDate(this.date)
-      }
-    }
-  }
-
   ngOnDestroy() {
+    this.routeDateService.nextDate(null);
     if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
+    }
+    if (this.isLatestSubscription) {
+      this.isLatestSubscription.unsubscribe();
     }
   }
 

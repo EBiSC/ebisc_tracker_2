@@ -18,6 +18,7 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
 
   // private properties
   private latestDateSubscription: Subscription = null;
+  private latestExamSubscription: Subscription = null;
   private currentDateSubscription: Subscription = null;
 
   constructor(
@@ -28,25 +29,18 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
   ){};
 
   ngOnInit() {
-    this.latestDateSubscription =
+    this.latestExamSubscription =
       this.apiExamService.getLatestExam().subscribe((exam: {date: string}) => {
         this.latestDate = exam.date;
-        this.changeMode();
       });
     this.currentDateSubscription = 
       this.routeDateService.date$.subscribe((date:string) => {
           this.currentDate = date;
-          this.changeMode();
       });
-  }
-
-  changeMode() {
-    if (this.latestDate && this.currentDate && this.latestDate != this.currentDate) {
-      this.showWarning = true;
-    }
-    else {
-      this.showWarning = false;
-    }
+    this.latestDateSubscription =
+      this.routeDateService.isLatest$.subscribe((isLatest: boolean) => {
+        this.showWarning = !isLatest;
+      });
   }
 
   dismiss() {
@@ -64,6 +58,9 @@ export class HistoryWarningComponent implements OnInit, OnDestroy{
     }
     if (this.latestDateSubscription) {
       this.latestDateSubscription.unsubscribe();
+    }
+    if (this.latestExamSubscription) {
+      this.latestExamSubscription.unsubscribe();
     }
   }
 
