@@ -17,7 +17,7 @@ const appRoutes: Routes = [
 
   { path: '', component: PrimaryOutletComponent, children: [
     { path: '', pathMatch: 'full', redirectTo: 'home' },
-    { path: 'home', component: HomeComponent },
+    { path: 'home', component: HomeComponent , data: {breadcrumb: "Home"}},
     { path: '**', component: PageNotFoundComponent },
   ]},
 

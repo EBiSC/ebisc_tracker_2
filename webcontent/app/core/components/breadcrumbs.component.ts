@@ -17,10 +17,11 @@ class Breadcrumb{
 export class BreadcrumbsComponent implements OnInit, OnDestroy{
 
   breadcrumbs: Breadcrumb[] = [];
-  lastBreadcrumb: Breadcrumb;
+  lastBreadcrumb: Breadcrumb
 
   // private properties
   private routerSubscription: Subscription;
+  private bottomRoute: ActivatedRoute;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -41,37 +42,37 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy{
 
   buildBreadcrumbs(): void {
     this.breadcrumbs = [];
-    this.lastBreadcrumb = {url: '/home', label: 'Home'};
-    let url = '';
-    let lastLabel: string = 'Home';
+    this.lastBreadcrumb = {label: 'Home', url: ''};
     let route = this.activatedRoute.root;
+    this.bottomRoute = route;
     while (route && route.snapshot) {
-      let snapshot = route.snapshot;
-      if (snapshot.url.length >0) {
-        let subUrl = snapshot.url.map(segment => segment.path).join('/');
-        url += '/' + subUrl;
-
-        let label: string = null;
-        if (snapshot.data["breadcrumb"] && snapshot.data["breadcrumb"] !== lastLabel) {
-          label = snapshot.data["breadcrumb"];
-          lastLabel = label;
-        } else {
-          label = subUrl;
-        }
-        if (url != this.lastBreadcrumb.url) {
-          this.breadcrumbs.push(this.lastBreadcrumb);
-          this.lastBreadcrumb = {url: url, label: label};
-        }
-      }
-
       let children = route.children;
       route = null;
       children.forEach(child => {
         if (child.outlet === 'primary') {
+          this.insertBreadcrumb(child);
           route = child;
+          this.bottomRoute = route;
         }
       });
     }
+  }
+
+  insertBreadcrumb(route: ActivatedRoute): void {
+    let snapshot = route.snapshot;
+    snapshot.url.forEach( segment => {
+      let label = snapshot.data["breadcrumb"] ? snapshot.data["breadcrumb"]
+          : segment.path;
+      if (label !== this.lastBreadcrumb.label) {
+        this.breadcrumbs.push(this.lastBreadcrumb);
+      }
+      this.breadcrumbs.forEach(bc => bc.url = '../' + bc.url);
+      this.lastBreadcrumb = {label: label, url: ''};
+    });
+  }
+
+  navigateTo(url:string) {
+    this.router.navigate([url], {relativeTo: this.bottomRoute});
   }
 
 }
