@@ -46,7 +46,7 @@ export class QuestionTimelineComponent implements OnDestroy, OnChanges{
       this.qTimelineSource = new Subject<Observable<QuestionTimeline>>();
       this.qTimelineSubscription = this.qTimelineSource
           .switchMap((o: Observable<QuestionTimeline>):Observable<QuestionTimeline> => o)
-          .subscribe((q:QuestionTimeline) => this.qTimeline = q );
+          .subscribe((q:QuestionTimeline) => this.qTimeline = q);
     }
     if (this.questionModule) {
       this.qTimelineSource.next(this.apiQuestionTimelineService.getTimeline(this.questionModule, {}));

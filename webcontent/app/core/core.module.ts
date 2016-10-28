@@ -19,11 +19,12 @@ import { ApiErrorService }  from './services/api-error.service';
 import { ApiQuestionTimelineService }  from './services/api-question-timeline.service';
 import { RouteDateService }  from './services/route-date.service';
 import { DateResolver }  from './services/date-resolver.service';
+import { GoogleLoadedService } from './services/google-loaded.service';
 
 @NgModule({
   imports: [ SharedModule, CommonModule, RouterModule ],
   declarations: [ PageNotFoundComponent, HomeComponent, ApiErrorComponent, BreadcrumbsComponent, HistoryWarningComponent, DateOutletComponent, PrimaryOutletComponent  ],
-  providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, ApiQuestionTimelineService, RouteDateService, DateResolver ],
+  providers: [ ApiExamService, ApiLineFailsService, ApiFailsService, ApiErrorService, ApiQuestionTimelineService, RouteDateService, DateResolver, GoogleLoadedService ],
   exports: [ ApiErrorComponent, DateOutletComponent, PrimaryOutletComponent, HistoryWarningComponent ],
 })
 export class CoreModule { 
