@@ -1,4 +1,5 @@
-import { Directive, OnChanges, SimpleChanges, Input, ElementRef } from '@angular/core';
+import { Directive, OnChanges, OnInit, OnDestroy, SimpleChanges, Input, ElementRef } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
 
 import { QuestionTimeline } from '../shared/question-timeline';
 import { GoogleLoadedService } from '../core/services/google-loaded.service';
@@ -7,28 +8,36 @@ import { GoogleLoadedService } from '../core/services/google-loaded.service';
 @Directive({
     selector: '[qTimelineChart]',
 })
-export class QuestionTimelineChartDirective implements OnChanges{
+export class QuestionTimelineChartDirective implements OnChanges, OnInit{
   @Input('qTimelineChart') qTimeline: QuestionTimeline;
 
-  private element: any;
+  private gLoadedSubscription: Subscription;
+  private isLoaded: boolean;
 
-  constructor(private elementRef: ElementRef, private googleLoadedService: GoogleLoadedService) {
-    this.element = elementRef.nativeElement;
+  constructor(
+    private elementRef: ElementRef,
+    private googleLoadedService: GoogleLoadedService
+  ) {}
+
+  ngOnInit() {
+    this.googleLoadedService.load('timeline').subscribe((isLoaded: boolean) => {
+      this.isLoaded = isLoaded;
+      this.loadChart();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.googleLoadedService.isLoaded['timeline']) {
-      this.loadChart(this.qTimeline, this.element);
-    }
-    else {
-      this.googleLoadedService.load('timeline');
-      let d = this;
-      google.charts.setOnLoadCallback(function() {d.loadChart(d.qTimeline, d.element)});
-    }
+    this.loadChart();
   }
 
-  loadChart(qTimeline: QuestionTimeline, element: any) {
-    if (qTimeline) {
+  ngOnDestroy() {
+    if (this.gLoadedSubscription) {
+      this.gLoadedSubscription.unsubscribe();
+    }
+  };
+
+  loadChart() {
+    if (this.qTimeline && this.isLoaded ) {
       let cols: {type:string, id:string}[] = [
               {type: 'string', id: 'Term'},
               {type: 'string', id: 'Num'},
@@ -38,7 +47,7 @@ export class QuestionTimelineChartDirective implements OnChanges{
       let rows: {c:{v: string|number}[]}[] = [];
       let lastNum : number;
       let firstRow = true;
-      qTimeline.items.forEach(qEvent => {
+      this.qTimeline.items.forEach(qEvent => {
         let qEventDate = Date.parse(qEvent.date);
         if (!firstRow) {
           rows[rows.length -1].c[2].v = qEventDate;
@@ -51,7 +60,7 @@ export class QuestionTimelineChartDirective implements OnChanges{
       });
 
       firstRow = true;
-      qTimeline.items.forEach(qEvent => {
+      this.qTimeline.items.forEach(qEvent => {
         let qEventDate = Date.parse(qEvent.date);
         if (!firstRow) {
           rows[rows.length -1].c[2].v = qEventDate;
@@ -64,7 +73,7 @@ export class QuestionTimelineChartDirective implements OnChanges{
       });
 
       let dt = new google.visualization.DataTable({cols:cols, rows:rows}, 0.6);
-      let timeline = new google.visualization.Timeline(element);
+      let timeline = new google.visualization.Timeline(this.elementRef.nativeElement);
       timeline.draw(dt);
     }
   }
