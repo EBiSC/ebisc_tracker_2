@@ -9,7 +9,6 @@ import { Exam } from '../shared/exam';
 import { Fail } from '../shared/fail';
 import { FailList } from '../shared/fail-list';
 import { Question } from '../shared/question';
-import { QuestionTimeline } from '../shared/question-timeline';
 import { ApiFailsService } from '../core/services/api-fails.service';
 
 @Component({
@@ -18,9 +17,6 @@ import { ApiFailsService } from '../core/services/api-fails.service';
     styles: [`
       .fails-table {
         max-width: 500px;
-      }
-      .timeline-chart {
-        max-height: 120px;
       }
     `]
 })

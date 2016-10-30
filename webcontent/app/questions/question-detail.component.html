@@ -13,6 +13,16 @@
   </div>
 </div>
 
+<div *ngIf="qTimeline">
+<h3>Timeline</h3>
+<div [qTimelineChart]="qTimeline" class="timeline-chart"></div>
+</div>
+
+<div *ngIf="question?.description" class="panel panel-default" >
+<div class="panel-heading">Description of the question asked</div>
+<div [innerHtml]="question?.description" class="panel-body"></div>
+</div>
+
 <dl class="dl-horizontal">
   <dt>Point in time:</dt>
   <dd>{{date | prettyDate}}</dd>
@@ -20,11 +30,6 @@
   <dt>Question module:</dt>
   <dd>{{questionModule}}</dd>
 </dl>
-
-<div *ngIf="question?.description" class="panel panel-default" >
-<div class="panel-heading">Description of the question asked</div>
-<div [innerHtml]="question?.description" class="panel-body"></div>
-</div>
 
 <div *ngIf="failList?.items">
 <h3>Breakdown of the fails</h3>
@@ -55,3 +60,4 @@
 
 </div>
 </div>
+
