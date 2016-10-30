@@ -1,6 +1,7 @@
 package EBiSC::Question::Biosamples::VialDerivedFrom;
 use Moose;
 use namespace::autoclean;
+use List::Util;
 use boolean qw(true false);
 use strict;
 use warnings;
@@ -27,14 +28,15 @@ sub run {
 
   my $cursor = $self->db->biosample_group->c->find(
     {'obj.characteristics.originCellLine' => {'$exists' => boolean::true}},
-    {projection => {'biosample_id' => 1, 'vial_derived_from' => 1, 'obj.characteristics.originCellLine.text' => 1}},
+    {projection => {'biosample_id' => 1, 'vialDerivedFrom' => 1, 'obj.characteristics.originCellLine.text' => 1}},
   );
   my $num_tested = 0;
   LINE:
   while (my $next = $cursor->next) {
     $num_tested += 1;
     my $origin_cell_line = $next->{obj}{characteristics}{originCellLine}[0]{text};
-    next LINE if $next->{vial_derived_from} && $next->{vial_derived_from} eq $origin_cell_line;
+
+    next LINE if List::Util::first {$origin_cell_line eq  $_} @{$next->{vialDerivedFrom}};
     my $ims_cursor = $self->db->ims_line->c->find(
       {'obj.batches.biosamples_id' => $next->{biosample_id}},
       {projection => {name => 1}},

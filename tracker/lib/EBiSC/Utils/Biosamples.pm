@@ -50,17 +50,15 @@ sub sync_db {
       my $obj = $api->get_group($id);
       next ID if !$obj;
 
-      my $vial_derived_from = undef;
+      my $vial_derived_from = [];
       if (my $vial_id = $obj->{samples} && $obj->{samples}[0]) {
-        if (my $vial = $api->get_sample($vial_id)) {
-          $vial_derived_from = $vial->{characteristics}{DerivedFrom} && $vial->{characteristics}{DerivedFrom}[0]{text};
-        }
+        $vial_derived_from = $api->get_derived_from($vial_id);
       }
 
       my $res = $db->biosample_group->c->insert_one({
       biosample_id => $id,
       date => $options{now},
-      vial_derived_from => $vial_derived_from,
+      vialDerivedFrom => $vial_derived_from,
       obj => $obj,
       });
       die "Database insert error" if !$res->acknowledged;
