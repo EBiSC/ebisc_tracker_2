@@ -21,6 +21,8 @@ Requirements to pass:
 * That vial has a "derived from" characteristic
 * Vial is derived from a biosample_id that matches the "origin cell line" tag of the batch
 
+Note: the vial can be indirectly derived from the cell line. e.g. `vial --> an intermediate --> origin cell line`
+
 EOF
 
 sub run {
