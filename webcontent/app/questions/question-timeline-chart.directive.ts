@@ -78,7 +78,7 @@ export class QuestionTimelineChartDirective implements OnChanges, OnInit{
     });
 
     let dt = new google.visualization.DataTable({cols:cols, rows:rows}, 0.6);
-    this.chart.draw(dt);
+    this.chart.draw(dt, {colors: ['#4fc2c2','#2ab4b4','#099999','#0e6767','#0a4a4a']});
   }
 
 }
