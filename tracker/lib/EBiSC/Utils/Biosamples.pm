@@ -17,6 +17,7 @@ sub sync_db {
     foreach my $id (@{$next->{obj}}{qw(biosamples_id biosamples_donor_id)}) {
       next ID if !$id || $processed_ids{$id};
       my $obj = $api->get_sample($id);
+      next ID if !$obj;
       my $res = $db->biosample->c->insert_one({
       biosample_id => $id,
       date => $options{now},
