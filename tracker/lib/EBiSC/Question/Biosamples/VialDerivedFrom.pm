@@ -14,6 +14,7 @@ A batch is tested if...
 * If batch is listed for a cell line in the IMS API
 * ...and if that batch is exported by Biosamples API
 * ...and if that batch in Biosamples has a "origin cell line" tag 
+* ...and if that origin cell line is exported by Biosamples
 
 Requirements to pass:
 
@@ -35,8 +36,9 @@ sub run {
   my $num_tested = 0;
   LINE:
   while (my $next = $cursor->next) {
-    $num_tested += 1;
     my $origin_cell_line = $next->{obj}{characteristics}{originCellLine}[0]{text};
+    next LINE if !$self->db->biosample->c->count({biosample_id => $origin_cell_line});
+    $num_tested += 1;
 
     next LINE if List::Util::first {$origin_cell_line eq  $_} @{$next->{vialDerivedFrom}};
     my $ims_cursor = $self->db->ims_line->c->find(
