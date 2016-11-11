@@ -9,6 +9,8 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 && \
 RUN mkdir -p /home/mybackups && chown 1001:0 /home/mybackups
 WORKDIR /home/mybackups
 
-Add db-backups /
+COPY db-backups/run-mongodb-backup /usr/bin/
+COPY container-entrypoint /usr/bin/
+ENTRYPOINT ["container-entrypoint"]
 CMD ["run-mongodb-backup"]
 USER 1001

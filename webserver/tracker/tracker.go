@@ -32,7 +32,7 @@ func main() {
   var dbhost, dir string
   dialInfo := &mgo.DialInfo{}
 
-  flag.StringVar(&dir, "dir", "/usr/src/myapp", "the directory to serve files from. Defaults to /usr/src/myapp")
+  flag.StringVar(&dir, "dir", "/usr/src/webcontent/webroot", "the directory to serve files from. Defaults to /usr/src/webcontent/webroot")
   flag.StringVar(&dbhost, "dbhost", "mongodb", "mongodb host name. Defaults to mongodb")
   flag.StringVar(&dialInfo.Username, "dbuser", "ebisc", "mongodb user name. Defaults to ebisc")
   flag.StringVar(&dialInfo.Password, "dbpass", "ebisc", "mongodb password. Defaults to ebisc")

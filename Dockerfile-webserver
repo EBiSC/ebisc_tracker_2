@@ -1,8 +1,23 @@
-FROM golang:1.7.3
+FROM debian:jessie
+
+RUN apt-get update && \
+  apt-get install -y curl git-core && \
+  curl https://storage.googleapis.com/golang/go1.7.3.linux-amd64.tar.gz | tar -xzC /usr/local && \
+  curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+  apt-get install nodejs
+
+ENV PATH="/go/bin:/usr/local/go/bin:${PATH}"
+ENV GOPATH="/go"
+
+COPY container-entrypoint /usr/bin/
 COPY ./webserver/tracker /go/src/ebisc/tracker
 RUN go get -d -v ebisc/tracker
 RUN go install -v ebisc/tracker
-COPY ./webcontent/webroot /usr/src/myapp
+
+COPY ./webcontent /usr/src/webcontent
+RUN cd /usr/src/webcontent && npm install --unsafe-perm
+
 EXPOSE 8000
-CMD tracker
+ENTRYPOINT ["container-entrypoint"]
+CMD ["tracker"]
 USER 1001
