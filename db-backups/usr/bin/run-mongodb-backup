@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+  echo "Required environment variables:"
+  echo "  ST_AUTH"
+  echo "  ST_USER"
+  echo "  ST_KEY"
+  echo "Optional environment variables:"
+  echo "  MONGODB_HOST      default mongodb"
+  echo "  MONGODB_USER      default ebisc"
+  echo "  MONGODB_PASSWORD  default ebisc"
+  echo "  MONGODB_DATABASE  default ebisc"
+  exit 1
+}
+
+# require parameters
+if [ -z "$ST_AUTH" ]; then usage; fi
+if [ -z "$ST_USER" ]; then usage; fi
+if [ -z "$ST_KEY" ]; then usage; fi
+
+# set defaults
+: ${MONGODB_HOST:=mongodb}
+: ${MONGODB_USER:=ebisc}
+: ${MONGODB_PASSWORD:=ebisc}
+: ${MONGODB_DATABASE:=ebisc}
+
+TIMESTAMP=`date +%F-%H-%M-%S`
+
+mongodump -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE
+
+DUMP=mongodb-$MONGODB_DATABASE-$TIMESTAMP
+echo $DUMP
+mv dump "$DUMP"
+tar -czf "$DUMP.tar.gz" "$DUMP"
+
+exec swift upload -H "X-Delete-After:5000000" trackerdumps $DUMP.tar.gz

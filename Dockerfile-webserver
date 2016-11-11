@@ -1,0 +1,8 @@
+FROM golang:1.7.3
+COPY ./webserver/tracker /go/src/ebisc/tracker
+RUN go get -d -v ebisc/tracker
+RUN go install -v ebisc/tracker
+COPY ./webcontent/webroot /usr/src/myapp
+EXPOSE 8000
+CMD tracker
+USER 1001

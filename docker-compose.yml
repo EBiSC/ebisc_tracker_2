@@ -4,71 +4,62 @@ services:
   mongodb:
     container_name: ebisc-mongodb
     image: centos/mongodb-32-centos7
-    networks:
-      - ebisc
     environment:
       - MONGODB_USER=ebisc
-      - MONGODB_PASSWORD=ebisc
+      - MONGODB_PASSWORD=${DB_PASS}
       - MONGODB_DATABASE=ebisc
-      - MONGODB_ADMIN_PASSWORD=admin_password
-  cpanm:
-    image: perl:5.20
+      - MONGODB_ADMIN_PASSWORD=${ADMIN_PASS}
     volumes:
-      - $PWD/tracker:/usr/src/myapp
-    command: cpanm -l /usr/src/myapp/local --installdeps /usr/src/myapp
-  tracker:
-    image: perl:5.20
-    container_name: ebisc-datatracker
-    networks:
-      - ebisc
-    volumes:
-      - $PWD/tracker:/usr/src/myapp
+      - /mnt/mongodb/data:/var/lib/mongodb/data:Z
+  db_backups:
+    build:
+      context: .
+      dockerfile: Dockerfile-db-backups
+    container_name: ebisc-db-backups
     environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PASS=ebisc
-      - MONGODB_USER=ebisc
-      - HPSCREG_USER=$HPSCREG_USER
-      - HPSCREG_PASS=$HPSCREG_PASS
-      - IMS_USER=$IMS_USER
-      - IMS_PASS=$IMS_PASS
+      - ST_AUTH=$ST_AUTH
+      - ST_USER=$ST_USER
+      - ST_KEY=$ST_KEY
+      - MONGODB_PASSWORD=${DB_PASS}
     links:
       - mongodb
-    working_dir: /usr/src/myapp
-    command: perl -I./lib -I/usr/src/myapp/local/lib/perl5 run.pl
     depends_on:
       - mongodb
   webserver:
-    image: golang
+    build:
+      context: .
+      dockerfile: Dockerfile-webserver
     container_name: ebisc-webserver
-    networks:
-      - ebisc
-    volumes:
-      - $PWD/webserver:/go
-      - $PWD/webcontent/webroot:/usr/src/myapp
-    environment:
-      - MONGODB_HOST=mongodb
-      - MONGODB_PASS=ebisc
-      - MONGODB_USER=ebisc
     links:
       - mongodb
     depends_on:
       - mongodb
-    command: tracker
     ports:
       - "8000:8000"
-  webserver_build:
-    image: golang
-    volumes:
-      - $PWD/webserver:/go
-    command: go get ebisc/tracker
+    command: tracker -dbpass ${DB_PASS}
   db_client:
     container_name: ebisc-mongodb-client
     image: centos/mongodb-32-centos7
-    networks:
-      - ebisc
     links:
       - mongodb
-    command: mongo -u ebisc -p ebisc mongodb/ebisc
+    command: mongo -u ebisc -p ${DB_PASS} mongodb/ebisc
+    depends_on:
+      - mongodb
+  tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile-tracker
+    container_name: ebisc-datatracker
+    environment:
+      - MONGODB_HOST=mongodb
+      - MONGODB_PASS=${DB_PASS}
+      - MONGODB_USER=ebisc
+      - HPSCREG_USER=${HPSCREG_USER}
+      - HPSCREG_PASS=${HPSCREG_PASS}
+      - IMS_USER=${IMS_USER}
+      - IMS_PASS=${IMS_PASS}
+    links:
+      - mongodb
     depends_on:
       - mongodb
   npm:
@@ -77,8 +68,6 @@ services:
     entrypoint: npm
     command: install --unsafe-perm
     volumes:
-      - $PWD/webcontent:/usr/src/app
+      - ./webcontent:/usr/src/app
     working_dir: /usr/src/app
-networks:
-  ebisc:
-    external: true
+    user: "1001"
