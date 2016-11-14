@@ -11,6 +11,15 @@ services:
       - MONGODB_PASSWORD=ebisc
       - MONGODB_DATABASE=ebisc
       - MONGODB_ADMIN_PASSWORD=admin_password
+  mongodumper:
+    container_name: ebisc-temp-mongodumper
+    image: mongo:3.2.10
+    volumes: $PWD/mongodump/:/var/mongodump/
+    command: mongodump -h mongodb -u ebisc -p ebisc -d ebisc -o /var/mongodump
+    networks:
+      - ebisc
+    depends_on:
+      - mongodb
   cpanm:
     image: perl:5.20
     volumes:
