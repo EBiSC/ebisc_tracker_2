@@ -14,7 +14,8 @@ services:
   mongodumper:
     container_name: ebisc-temp-mongodumper
     image: mongo:3.2.10
-    volumes: $PWD/mongodump/:/var/mongodump/
+    volumes: 
+      -  $PWD/mongodump/:/var/mongodump
     command: mongodump -h mongodb -u ebisc -p ebisc -d ebisc -o /var/mongodump
     networks:
       - ebisc
