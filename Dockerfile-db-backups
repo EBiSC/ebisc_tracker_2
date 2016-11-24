@@ -6,7 +6,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 && \
     apt-get install -y mongodb-org-tools python-pip && \
     pip install python-swiftclient==3.1.0
 
-RUN mkdir -p /home/mybackups && chown 1001:0 /home/mybackups
+RUN mkdir -p /home/mybackups && chmod g+w /home/mybackups
 WORKDIR /home/mybackups
 
 COPY db-backups/run-mongodb-backup /usr/bin/
