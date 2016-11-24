@@ -10,7 +10,7 @@ services:
       - MONGODB_DATABASE=ebisc
       - MONGODB_ADMIN_PASSWORD=${ADMIN_PASS}
     volumes:
-      - /mnt/mongodb/data:/var/lib/mongodb/data:Z
+      - ${MONGO_DATA_DIR}:/var/lib/mongodb/data:Z
   db_backups:
     build:
       context: .
@@ -63,12 +63,3 @@ services:
       - mongodb
     depends_on:
       - mongodb
-  npm:
-    container_name: npm
-    image: node:slim
-    entrypoint: npm
-    command: install --unsafe-perm
-    volumes:
-      - ./webcontent:/usr/src/app
-    working_dir: /usr/src/app
-    user: "1001"
