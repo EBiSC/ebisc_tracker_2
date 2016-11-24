@@ -40,6 +40,7 @@ func main() {
   flag.Parse()
 
   dialInfo.Addrs = []string{dbhost}
+  dialInfo.Timeout = 60 * time.Second
   session, err := mgo.DialWithInfo(dialInfo)
   if err != nil {
     panic(err)
