@@ -17,4 +17,4 @@ function usage() {
 : ${MONGODB_PASSWORD:=ebisc}
 : ${MONGODB_DATABASE:=ebisc}
 
-exec tracker -dbpass ${MONGODB_PASSWORD} -dbuser ${MONGODB_USER} -dbhost ${MONGODB_HOST} -dbname ${MONGODB_NAME}
+exec tracker -dbpass ${MONGODB_PASSWORD} -dbuser ${MONGODB_USER} -dbhost ${MONGODB_HOST} -dbname ${MONGODB_DATABASE}
