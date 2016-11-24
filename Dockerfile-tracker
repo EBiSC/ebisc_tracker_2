@@ -3,5 +3,8 @@ COPY ./tracker/cpanfile /usr/src/myapp/cpanfile
 RUN cpanm --installdeps /usr/src/myapp
 COPY ./tracker/lib /usr/src/myapp/lib
 COPY ./tracker/run.pl /usr/src/myapp/run.pl
+COPY container-entrypoint /usr/bin/
 CMD perl -I/usr/src/myapp/lib /usr/src/myapp/run.pl
+ENTRYPOINT ["container-entrypoint"]
+WORKDIR /usr/src/myapp
 USER 1001
