@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+  echo "Optional environment variables:"
+  echo "  MONGODB_HOST      default mongodb"
+  echo "  MONGODB_USER      default ebisc"
+  echo "  MONGODB_PASSWORD  default ebisc"
+  echo "  MONGODB_DATABASE  default ebisc"
+  exit 1
+}
+
+# set defaults
+: ${MONGODB_HOST:=mongodb}
+: ${MONGODB_USER:=ebisc}
+: ${MONGODB_PASSWORD:=ebisc}
+: ${MONGODB_DATABASE:=ebisc}
+
+exec tracker -dbpass ${MONGODB_PASSWORD} -dbuser ${MONGODB_USER} -dbhost ${MONGODB_HOST} -dbname ${MONGODB_NAME}

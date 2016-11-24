@@ -10,6 +10,7 @@ ENV PATH="/go/bin:/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
 
 COPY container-entrypoint /usr/bin/
+COPY ./webserver/run-webserver /usr/bin/
 COPY ./webserver/tracker /go/src/ebisc/tracker
 RUN go get -d -v ebisc/tracker
 RUN go install -v ebisc/tracker
@@ -19,5 +20,5 @@ RUN cd /usr/src/webcontent && npm install --unsafe-perm
 
 EXPOSE 8000
 ENTRYPOINT ["container-entrypoint"]
-CMD ["tracker"]
+CMD ["run-webserver"]
 USER 1001

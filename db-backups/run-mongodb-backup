@@ -28,7 +28,7 @@ if [ -z "$ST_KEY" ]; then usage; fi
 
 TIMESTAMP=`date +%F-%H-%M-%S`
 
-mongodump -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE
+mongodump -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE --oplog
 
 DUMP=mongodb-$MONGODB_DATABASE-$TIMESTAMP
 echo $DUMP

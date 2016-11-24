@@ -30,13 +30,14 @@ services:
       context: .
       dockerfile: Dockerfile-webserver
     container_name: ebisc-webserver
+    environment:
+      - MONGODB_PASSWORD=${DB_PASS}
     links:
       - mongodb
     depends_on:
       - mongodb
     ports:
       - "8000:8000"
-    command: tracker -dbpass ${DB_PASS}
   db_client:
     container_name: ebisc-mongodb-client
     image: centos/mongodb-32-centos7
