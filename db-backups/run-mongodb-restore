@@ -9,6 +9,8 @@ function usage() {
   echo "  ST_KEY"
   echo "Optional environment variables:"
   echo "  MONGODB_HOST      default mongodb"
+  echo "  MONGODB_USER      default ebisc"
+  echo "  MONGODB_PASSWORD  default ebisc"
   echo "  MONGODB_ADMIN_PASSWORD  default ebisc"
   echo "  MONGODB_DATABASE  default ebisc"
   exit 1
@@ -21,6 +23,8 @@ if [ -z "$ST_KEY" ]; then usage; fi
 
 # set defaults
 : ${MONGODB_HOST:=mongodb}
+: ${MONGODB_USER:=ebisc}
+: ${MONGODB_PASSWORD:=ebisc}
 : ${MONGODB_ADMIN_PASSWORD:=ebisc}
 : ${MONGODB_DATABASE:=ebisc}
 
@@ -36,4 +40,4 @@ if [ ! -d "$DBDIR" ]; then
 fi
 
 mongo -u admin -p $MONGODB_ADMIN_PASSWORD $MONGODB_HOST/admin --eval "db.getSiblingDB('${MONGODB_DATABASE}').dropDatabase()"
-mongorestore -h $MONGODB_HOST -u admin -p $MONGODB_ADMIN_PASSWORD -d $MONGODB_DATABASE $DBDIR
+mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $DBDIR
