@@ -30,7 +30,12 @@ NEWEST=`swift list trackerdumps --prefix mongodb-$MONGODB_DATABASE- | sort | tai
 echo newest file in swift is $NEWEST
 swift download trackerdumps $NEWEST
 tar -xzf $NEWEST
-NEWESTBASE=`basename $NEWEST .tar.gz`
+DBDIR=`basename $NEWEST .tar.gz`/$MONGODB_DATABASE
 
-mongo -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_DATABASE --eval "db.dropDatabase()"
-mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $NEWESTBASE
+if [ ! -d "$DBDIR" ]; then
+  echo "cannot backup: directory $DBDIR does not exist"
+  exit 1
+fi
+
+mongo -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_HOST/$MONGODB_DATABASE --eval "db.dropDatabase()"
+mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $DBDIR
