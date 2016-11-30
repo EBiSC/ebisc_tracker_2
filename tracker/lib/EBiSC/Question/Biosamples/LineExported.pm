@@ -11,6 +11,7 @@ our $description = <<EOF;
 A cell line is tested if...
 
 * If cell line is exported by hPSCreg API
+* ...and not marked as withdrawn in hPSCreg API
 * ...and if hPSCreg lists a cell line biosample ID for that cell line
 
 Requirements to pass:
@@ -24,6 +25,7 @@ sub run {
 
   my $cursor = $self->db->hpscreg_line->c->find(
     {'obj.biosamples_id' => {'$exists' => boolean::true}},
+    {'obj.status.withdrawn' => {'$ne' => boolean::true}},
     {projection => {'name' => 1, 'obj.biosamples_id' => 1}},
   );
   my $num_tested = 0;

@@ -12,6 +12,7 @@ A cell line is tested if...
 
 * If hPSCreg API exports a donor biosample ID for the line
 * ...and if IMS API exports a donor biosample ID for the line
+* ...and not marked as withdrawn in hPSCreg
 
 Requirements to pass:
 
@@ -24,6 +25,7 @@ sub run {
 
   my $cursor = $self->db->hpscreg_line->c->find(
     {'obj.biosamples_id' => {'$exists' => boolean::true}},
+    {'obj.status.withdrawn' => {'$ne' => boolean::true}},
     {projection => {'name' => 1, 'obj.biosamples_donor_id' => 1}},
   );
   my $num_tested = 0;

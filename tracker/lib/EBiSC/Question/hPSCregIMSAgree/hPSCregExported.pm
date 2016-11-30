@@ -12,7 +12,8 @@ A cell line is tested if it is exported by IMS API
 
 Requirements to pass:
 
-Cell line is exported by hPSCreg API
+* Cell line is exported by hPSCreg API
+* ...and cell line is not marked as withdrawn in hPSCreg API
 
 EOF
 
@@ -26,7 +27,7 @@ sub run {
   LINE:
   while (my $next = $cursor->next) {
     $num_tested += 1;
-    next LINE if $self->db->hpscreg_line->c->count({name => $next->{name}}, {limit => 1});
+    next LINE if $self->db->hpscreg_line->c->count({name => $next->{name}, 'obj.status.withdrawn' => {'$ne' => boolean::true}}, {limit => 1});
     $self->add_failed_line(cell_line => $next->{name});
   }
 
