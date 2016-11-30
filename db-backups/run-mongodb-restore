@@ -35,5 +35,5 @@ if [ ! -d "$DBDIR" ]; then
   exit 1
 fi
 
-mongo -u admin -p $MONGODB_ADMIN_PASSWORD $MONGODB_HOST/$MONGODB_DATABASE --eval "db.dropDatabase()"
+mongo -u admin -p $MONGODB_ADMIN_PASSWORD $MONGODB_HOST/admin --eval "db.getSiblingDB('${MONGODB_DATABASE}').dropDatabase()"
 mongorestore -h $MONGODB_HOST -u admin -p $MONGODB_ADMIN_PASSWORD -d $MONGODB_DATABASE $DBDIR
