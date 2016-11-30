@@ -24,8 +24,7 @@ sub run {
   my ($self) = @_;
 
   my $cursor = $self->db->hpscreg_line->c->find(
-    {'obj.status.submitted' => boolean::true},
-    {'obj.status.withdrawn' => {'$ne' => boolean::true}},
+    {'obj.status.submitted' => boolean::true, 'obj.status.withdrawn' => {'$ne' => boolean::true}},
     {projection => {name => 1}},
   );
   my $num_tested = 0;
