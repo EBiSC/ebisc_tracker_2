@@ -9,8 +9,7 @@ function usage() {
   echo "  ST_KEY"
   echo "Optional environment variables:"
   echo "  MONGODB_HOST      default mongodb"
-  echo "  MONGODB_USER      default ebisc"
-  echo "  MONGODB_PASSWORD  default ebisc"
+  echo "  MONGODB_ADMIN_PASSWORD  default ebisc"
   echo "  MONGODB_DATABASE  default ebisc"
   exit 1
 }
@@ -22,8 +21,7 @@ if [ -z "$ST_KEY" ]; then usage; fi
 
 # set defaults
 : ${MONGODB_HOST:=mongodb}
-: ${MONGODB_USER:=ebisc}
-: ${MONGODB_PASSWORD:=ebisc}
+: ${MONGODB_ADMIN_PASSWORD:=ebisc}
 : ${MONGODB_DATABASE:=ebisc}
 
 NEWEST=`swift list trackerdumps --prefix mongodb-$MONGODB_DATABASE- | sort | tail -1`
@@ -37,5 +35,5 @@ if [ ! -d "$DBDIR" ]; then
   exit 1
 fi
 
-mongo -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_HOST/$MONGODB_DATABASE --eval "db.dropDatabase()"
-mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $DBDIR
+mongo -u admin -p $MONGODB_ADMIN_PASSWORD $MONGODB_HOST/$MONGODB_DATABASE --eval "db.dropDatabase()"
+mongorestore -h $MONGODB_HOST -u admin -p $MONGODB_ADMIN_PASSWORD -d $MONGODB_DATABASE $DBDIR
