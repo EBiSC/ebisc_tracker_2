@@ -32,5 +32,5 @@ swift download trackerdumps $NEWEST
 tar -xzf $NEWEST
 NEWESTBASE=`basename $NEWEST .tar.gz`
 
-mongo -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE --eval "db.dropDatabase()"
+mongo -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD $MONGODB_DATABASE --eval "db.dropDatabase()"
 mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $NEWESTBASE
