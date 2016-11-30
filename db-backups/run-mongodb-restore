@@ -28,9 +28,9 @@ if [ -z "$ST_KEY" ]; then usage; fi
 
 NEWEST=`swift list trackerdumps --prefix mongodb-$MONGODB_DATABASE- | sort | tail -1`
 echo newest file in swift is $NEWEST
-swift download -o /mybackups/$NEWEST trackerdumps $NEWEST
-tar -xzf /mybackups/$NEWEST -C /mybackups
+swift download trackerdumps $NEWEST
+tar -xzf $NEWEST
 NEWESTBASE=`basename $NEWEST .tar.gz`
 
 mongo -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE --eval "db.dropDatabase()"
-mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE /mybackups/$NEWESTBASE
+mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $NEWESTBASE
