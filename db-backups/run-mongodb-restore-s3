@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+  echo "Required environment variables:"
+  echo "  AWS_ACCESS_KEY_ID"
+  echo "  AWS_SECRET_ACCESS_KEY"
+  echo "  AWS_ENDPOINT_URL"
+  echo "  AWS_BUCKET"
+  echo "Optional environment variables:"
+  echo "  MONGODB_HOST      default mongodb"
+  echo "  MONGODB_USER      default ebisc"
+  echo "  MONGODB_PASSWORD  default ebisc"
+  echo "  MONGODB_ADMIN_PASSWORD  default ebisc"
+  echo "  MONGODB_DATABASE  default ebisc"
+  exit 1
+}
+
+# require parameters
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then usage; fi
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then usage; fi
+if [ -z "$AWS_ENDPOINT_URL" ]; then usage; fi
+if [ -z "$AWS_BUCKET" ]; then usage; fi
+
+# set defaults
+: ${MONGODB_HOST:=mongodb}
+: ${MONGODB_USER:=ebisc}
+: ${MONGODB_PASSWORD:=ebisc}
+: ${MONGODB_ADMIN_PASSWORD:=ebisc}
+: ${MONGODB_DATABASE:=ebisc}
+
+NEWEST=`aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/trackerdumps/ | sort | tail -1 | awk '{print $4}'`
+echo newest file in swift is $NEWEST
+aws --endpoint-url $AWS_ENDPOINT_URL s3 cp 
+swift download trackerdumps $NEWEST s3://${AWS_BUCKET}/trackerdumps/${NEWEST}
+tar -xzf $NEWEST
+DBDIR=`basename $NEWEST .tar.gz`/$MONGODB_DATABASE
+
+if [ ! -d "$DBDIR" ]; then
+  echo "cannot backup: directory $DBDIR does not exist"
+  exit 1
+fi
+
+mongo -u admin -p $MONGODB_ADMIN_PASSWORD $MONGODB_HOST/admin --eval "db.getSiblingDB('${MONGODB_DATABASE}').dropDatabase()"
+mongorestore -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE $DBDIR

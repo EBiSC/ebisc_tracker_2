@@ -1,0 +1,15 @@
+FROM debian:jessie
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 && \
+    echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.2 main" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list && \
+    apt-get update && \
+    apt-get install -y mongodb-org-tools mongodb-org-shell python-pip && \
+    pip install awscli
+
+RUN mkdir -p /home/mybackups && chmod g+w /home/mybackups
+WORKDIR /home/mybackups
+
+COPY db-backups/run-mongodb-backup-s3 db-backups/run-mongodb-restore-s3 container-entrypoint /usr/bin/
+ENTRYPOINT ["container-entrypoint"]
+CMD ["run-mongodb-backup"]
+USER 1001

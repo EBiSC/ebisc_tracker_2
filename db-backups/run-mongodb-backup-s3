@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+function usage() {
+  echo "Required environment variables:"
+  echo "  AWS_ACCESS_KEY_ID"
+  echo "  AWS_SECRET_ACCESS_KEY"
+  echo "  AWS_ENDPOINT_URL"
+  echo "  AWS_BUCKET"
+  echo "Optional environment variables:"
+  echo "  MONGODB_HOST      default mongodb"
+  echo "  MONGODB_USER      default ebisc"
+  echo "  MONGODB_PASSWORD  default ebisc"
+  echo "  MONGODB_DATABASE  default ebisc"
+  exit 1
+}
+
+# require parameters
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then usage; fi
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then usage; fi
+if [ -z "$AWS_ENDPOINT_URL" ]; then usage; fi
+if [ -z "$AWS_BUCKET" ]; then usage; fi
+
+# set defaults
+: ${MONGODB_HOST:=mongodb}
+: ${MONGODB_USER:=ebisc}
+: ${MONGODB_PASSWORD:=ebisc}
+: ${MONGODB_DATABASE:=ebisc}
+
+TIMESTAMP=`date +%F-%H-%M-%S`
+
+mongodump -h $MONGODB_HOST -u $MONGODB_USER -p $MONGODB_PASSWORD -d $MONGODB_DATABASE
+
+DUMP=mongodb-$MONGODB_DATABASE-$TIMESTAMP
+echo $DUMP
+mv dump "$DUMP"
+tar -czf "$DUMP.tar.gz" "$DUMP"
+
+EXPIRES=`date -d "+60 days" +"%Y-%m-%dT%H:%M:%SZ"`
+exec aws --endpoint-url $AWS_ENDPOINT_URL s3 cp --expires $EXPIRES $DUMP.tar.gz s3://${AWS_BUCKET}/trackerdumps/
