@@ -11,5 +11,5 @@ WORKDIR /home/mybackups
 
 COPY db-backups/run-mongodb-backup-s3 db-backups/run-mongodb-restore-s3 container-entrypoint /usr/bin/
 ENTRYPOINT ["container-entrypoint"]
-CMD ["run-mongodb-backup"]
+CMD ["run-mongodb-backup-s3"]
 USER 1001
