@@ -37,5 +37,15 @@ echo $DUMP
 mv dump "$DUMP"
 tar -czf "$DUMP.tar.gz" "$DUMP"
 
-EXPIRES=`date -d "+60 days" +"%Y-%m-%dT%H:%M:%SZ"`
-exec aws --endpoint-url $AWS_ENDPOINT_URL s3 cp --expires $EXPIRES $DUMP.tar.gz s3://${AWS_BUCKET}/trackerdumps/
+aws --endpoint-url $AWS_ENDPOINT_URL s3 cp $DUMP.tar.gz s3://${AWS_BUCKET}/trackerdumps/
+
+EPOCH_DELETE=`date -d "-60 days" +"%s"`
+for line in `aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/trackerdumps/`; do
+  read DATE TIME SIZE OBJECT <<< "${line}"
+  EPOCH_FILE=`date -d "$DATE $TIME" +"%s"`
+  if [ $EPOCH_DELETE -ge $EPOCH_FILE ];
+  then
+    echo "Deleting expired object s3://${AWS_BUCKET}/trackerdumps/${OBJECT}"
+    aws --endpoint-url $AWS_ENDPOINT_URL s3 rm s3://${AWS_BUCKET}/trackerdumps/${OBJECT}
+  fi
+done
