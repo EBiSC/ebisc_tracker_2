@@ -32,8 +32,7 @@ if [ -z "$AWS_BUCKET" ]; then usage; fi
 
 NEWEST=`aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/trackerdumps/ | sort | tail -1 | awk '{print $4}'`
 echo newest file in swift is $NEWEST
-aws --endpoint-url $AWS_ENDPOINT_URL s3 cp 
-swift download trackerdumps $NEWEST s3://${AWS_BUCKET}/trackerdumps/${NEWEST}
+aws --endpoint-url $AWS_ENDPOINT_URL s3 cp s3://${AWS_BUCKET}/trackerdumps/${NEWEST} $NEWEST
 tar -xzf $NEWEST
 DBDIR=`basename $NEWEST .tar.gz`/$MONGODB_DATABASE
 
