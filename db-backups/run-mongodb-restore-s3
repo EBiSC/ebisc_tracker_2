@@ -8,6 +8,7 @@ function usage() {
   echo "  AWS_SECRET_ACCESS_KEY"
   echo "  AWS_ENDPOINT_URL"
   echo "  AWS_BUCKET"
+  echo "  AWS_PREFIX"
   echo "Optional environment variables:"
   echo "  MONGODB_HOST      default mongodb"
   echo "  MONGODB_USER      default ebisc"
@@ -22,6 +23,7 @@ if [ -z "$AWS_ACCESS_KEY_ID" ]; then usage; fi
 if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then usage; fi
 if [ -z "$AWS_ENDPOINT_URL" ]; then usage; fi
 if [ -z "$AWS_BUCKET" ]; then usage; fi
+if [ -z "$AWS_PREFIX" ]; then usage; fi
 
 # set defaults
 : ${MONGODB_HOST:=mongodb}
@@ -30,9 +32,9 @@ if [ -z "$AWS_BUCKET" ]; then usage; fi
 : ${MONGODB_ADMIN_PASSWORD:=ebisc}
 : ${MONGODB_DATABASE:=ebisc}
 
-NEWEST=`aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/ | sort | tail -1 | awk '{print $4}'`
+NEWEST=`aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/${AWS_PREFIX}/ | sort | tail -1 | awk '{print $4}'`
 echo newest file in swift is $NEWEST
-aws --endpoint-url $AWS_ENDPOINT_URL s3 cp s3://${AWS_BUCKET}/${NEWEST} $NEWEST
+aws --endpoint-url $AWS_ENDPOINT_URL s3 cp s3://${AWS_BUCKET}/${AWS_PREFIX}/${NEWEST} $NEWEST
 tar -xzf $NEWEST
 DBDIR=`basename $NEWEST .tar.gz`/$MONGODB_DATABASE
 

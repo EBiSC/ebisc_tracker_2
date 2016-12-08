@@ -8,6 +8,7 @@ function usage() {
   echo "  AWS_SECRET_ACCESS_KEY"
   echo "  AWS_ENDPOINT_URL"
   echo "  AWS_BUCKET"
+  echo "  AWS_PREFIX"
   echo "Optional environment variables:"
   echo "  MONGODB_HOST      default mongodb"
   echo "  MONGODB_USER      default ebisc"
@@ -21,6 +22,7 @@ if [ -z "$AWS_ACCESS_KEY_ID" ]; then usage; fi
 if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then usage; fi
 if [ -z "$AWS_ENDPOINT_URL" ]; then usage; fi
 if [ -z "$AWS_BUCKET" ]; then usage; fi
+if [ -z "$AWS_PREFIX" ]; then usage; fi
 
 # set defaults
 : ${MONGODB_HOST:=mongodb}
@@ -37,16 +39,16 @@ echo $DUMP
 mv dump "$DUMP"
 tar -czf "$DUMP.tar.gz" "$DUMP"
 
-aws --endpoint-url $AWS_ENDPOINT_URL s3 cp $DUMP.tar.gz s3://${AWS_BUCKET}/
+aws --endpoint-url $AWS_ENDPOINT_URL s3 cp $DUMP.tar.gz s3://${AWS_BUCKET}/${AWS_PREFIX}/
 
 EPOCH_DELETE=`date -d "-60 days" +"%s"`
 IFS=$'\n'
-for line in `aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/`; do
+for line in `aws --endpoint-url $AWS_ENDPOINT_URL s3 ls s3://${AWS_BUCKET}/${AWS_PREFIX}/`; do
   IFS=" " read DATE TIME SIZE OBJECT <<< "${line}"
   EPOCH_FILE=`date -d "$DATE $TIME" +"%s"`
   if [ $EPOCH_DELETE -ge $EPOCH_FILE ];
   then
-    echo "Deleting expired object s3://${AWS_BUCKET}/${OBJECT}"
-    aws --endpoint-url $AWS_ENDPOINT_URL s3 rm s3://${AWS_BUCKET}/${OBJECT}
+    echo "Deleting expired object s3://${AWS_BUCKET}/${AWS_PREFIX}/${OBJECT}"
+    aws --endpoint-url $AWS_ENDPOINT_URL s3 rm s3://${AWS_BUCKET}/${AWS_PREFIX}/${OBJECT}
   fi
 done
