@@ -22,7 +22,7 @@ has 'lines' => (is => 'ro', isa => 'EBiSC::Cursor::hPSCreg', lazy => 1, builder 
 sub BUILD {
   my ($self) = @_;
   $self->ua->credentials(sprintf("%s:%u", $self->host, $self->port), $self->realm, $self->user, $self->pass);
-  $self->ua->timeout(5);
+  $self->ua->timeout(20);
 }
 
 sub _build_base_url {
