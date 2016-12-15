@@ -73,4 +73,3 @@ services:
     volumes:
       - ./webcontent:/usr/src/app
     working_dir: /usr/src/app
-    user: "1001"
