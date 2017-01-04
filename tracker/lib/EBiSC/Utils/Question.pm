@@ -6,7 +6,7 @@ use warnings;
 use boolean qw(true false);
 
 our @modules = qw(
-  IMSBiosample LiveNoBatches LiveNoClip LiveNoCofA hPSCregBiosample
+  IMSBiosample IMSDonorBiosample LiveNoBatches LiveNoClip LiveNoCofA hPSCregBiosample
   hPSCregIMSAgree::BiosampleIDs hPSCregIMSAgree::DonorBiosampleIDs
   hPSCregIMSAgree::IMSExported hPSCregIMSAgree::hPSCregExported
   ECACCLive
@@ -40,7 +40,7 @@ sub run_questions {
 
 sub commit_exam {
   my (%options) = @_;
-  $options{db}->exam->c->insert($options{exam});
+  $options{db}->exam->c->insert_one($options{exam});
 }
 
 sub run_module {
