@@ -35,7 +35,12 @@ sub run {
   foreach my $fail ($cursor->all) {
     $self->add_failed_line(cell_line => $fail->{name});
   }
-  my $num_tested = $self->db->ims_line->c->count({'obj.flag_go_live' => boolean::true});
+  my $num_tested = $self->db->ims_line->c->count(
+    {
+      'obj.flag_go_live' => boolean::true,
+      'obj.availability' => {'$ne' => 'Restricted distribution'},
+    }
+  );
   $self->num_tested($num_tested);
 
 }
