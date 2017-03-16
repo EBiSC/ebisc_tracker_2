@@ -12,6 +12,7 @@ A cell line is tested if...
 
 * If line is exported by the IMS API
 * ...and if that line is marked as "go live"
+* ...and if that line is not marked as availability="Restricted distribution"
 
 Requirements to pass:
 
@@ -27,6 +28,7 @@ sub run {
     {
       'obj.flag_go_live' => boolean::true,
       'obj.cell_line_information_packs.0' => {'$exists' => boolean::false},
+      'obj.availability' => {'$ne' => 'Restricted distribution'},
     },
     {projection => {name => 1}},
   );
