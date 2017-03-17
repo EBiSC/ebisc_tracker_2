@@ -1,3 +1,8 @@
 webcontent/app/**/*.js
 webcontent/app/**/*.js.map
 tracker/local/
+webcontent/aot/
+webcontent/node_modules/
+webcontent/typings/
+webcontent/webroot/static/
+webserver/go/
