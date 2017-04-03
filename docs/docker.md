@@ -43,7 +43,7 @@ Next, run the tracking code:
 3. Compile angular code:
 -----------------------
 
-This is development conenience.  We build the javascript onto your local machine so you don't have to rebuild it each time your images chanegs.
+This is development convenience.  We build the javascript onto your local machine so you don't have to rebuild it each time your images chanegs.
 
   docker-compose run npm
 
