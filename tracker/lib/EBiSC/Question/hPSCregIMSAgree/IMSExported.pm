@@ -11,7 +11,7 @@ our $description = <<EOF;
 A cell line is tested if...
 
 * If line is exported by hPSCreg API
-* ...and if marked as submitted in hPSCreg API
+* ...and if marked as submitted or has a validator comment in hPSCreg API
 * ...and not marked as withdrawn in hPSCreg API
 
 Requirements to pass:
@@ -24,7 +24,13 @@ sub run {
   my ($self) = @_;
 
   my $cursor = $self->db->hpscreg_line->c->find(
-    {'obj.status.submitted' => boolean::true, 'obj.status.withdrawn' => {'$ne' => boolean::true}},
+    {
+      '$or' => [
+          {'obj.status.submitted' => boolean::true},
+          {'obj.status.validator_comment' => {'$exists' => boolean::true}},
+          ],
+      'obj.status.withdrawn' => {'$ne' => boolean::true},
+    },
     {projection => {name => 1}},
   );
   my $num_tested = 0;
