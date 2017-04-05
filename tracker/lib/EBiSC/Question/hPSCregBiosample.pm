@@ -26,14 +26,16 @@ sub run {
 
   my $cursor = $self->db->hpscreg_line->c->find(
     {
-      '$or' => [
+      '$and' => [
+        {'$or' => [
           {'obj.status.submitted' => boolean::true},
           {'obj.status.validator_comment' => {'$exists' => boolean::true}},
-      ],
-      'obj.status.withdrawn' => {'$ne' => boolean::true},
-      '$or' => [
-        {'obj.biosamples_id' => {'$exists' => boolean::false}},
-        {'obj.biosamples_donor_id' => {'$exists' => boolean::false}},
+        ]},
+        {'obj.status.withdrawn' => {'$ne' => boolean::true}},
+        {'$or' => [
+          {'obj.biosamples_id' => {'$exists' => boolean::false}},
+          {'obj.biosamples_donor_id' => {'$exists' => boolean::false}},
+        ]},
       ],
     },
     {projection => {name => 1}},
