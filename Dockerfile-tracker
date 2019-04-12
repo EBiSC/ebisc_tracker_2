@@ -1,4 +1,9 @@
 FROM perl:5.24
+
+ARG http_proxy
+ARG https_proxy
+ENV http_proxy="$http_proxy" https_proxy="$https_proxy"
+
 COPY ./tracker/cpanfile /usr/src/myapp/cpanfile
 RUN cpanm --installdeps /usr/src/myapp
 COPY ./tracker/lib /usr/src/myapp/lib
