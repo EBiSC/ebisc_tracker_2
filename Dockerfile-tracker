@@ -4,6 +4,9 @@ ARG http_proxy
 ARG https_proxy
 ENV http_proxy="$http_proxy" https_proxy="$https_proxy"
 
+# install LWP::UserAgent via ftp, because the proxy detects a virus..
+RUN cpanm --notest ftp://ftp.fu-berlin.de/unix/languages/perl/authors/id/O/OA/OALDERS/libwww-perl-6.38.tar.gz
+
 COPY ./tracker/cpanfile /usr/src/myapp/cpanfile
 RUN cpanm --notest --installdeps /usr/src/myapp
 COPY ./tracker/lib /usr/src/myapp/lib
