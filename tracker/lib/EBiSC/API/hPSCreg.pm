@@ -23,6 +23,7 @@ sub BUILD {
   my ($self) = @_;
   $self->ua->credentials(sprintf("%s:%u", $self->host, $self->port), $self->realm, $self->user, $self->pass);
   $self->ua->timeout(20);
+  $self->ua->env_proxy;
 }
 
 sub _build_base_url {

@@ -17,6 +17,7 @@ sub BUILD {
   my ($self) = @_;
   $self->ua->default_header(Authorization => sprintf('ApiKey %s:%s', $self->user, $self->pass));
   $self->ua->timeout(60);
+  $self->ua->env_proxy;
 }
 
 

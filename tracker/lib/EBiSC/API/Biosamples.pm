@@ -9,6 +9,11 @@ use warnings;
 has 'base_url' => (is => 'rw', isa => 'Str', default => 'https://www.ebi.ac.uk/biosamples/api');
 has 'ua' => (is => 'ro', isa => 'LWP::UserAgent', lazy => 1, default => sub {return LWP::UserAgent->new;});
 
+sub BUILD {
+  my ($self) = @_;
+  $self->ua->env_proxy;
+}
+
 sub get_sample {
   my ($self, $id) = @_;
   my $url = sprintf('%s/samples/%s', $self->base_url, $id);
