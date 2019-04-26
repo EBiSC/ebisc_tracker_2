@@ -6,7 +6,7 @@ use boolean qw(true false);
 use strict;
 use warnings;
 
-our $title = 'Do all batches have a vial with "derived from" tag that that matches the batch\'s "origin cell line" tag?';
+our $title = 'Do all batches have a vial with "derived from" tag that matches the batch\'s "origin cell line" tag?';
 our $description = <<EOF;
 
 A batch is tested if...
