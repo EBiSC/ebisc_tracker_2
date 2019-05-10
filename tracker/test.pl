@@ -32,8 +32,11 @@ use EBiSC::MongoDB;
 
 my $biosamples_api = EBiSC::API::Biosamples->new();
 
-my $batch = $biosamples_api->get_group("SAMEG314740");
-print Data::Dumper->Dump([$batch], [qw(batch)]);
+#my $batch = $biosamples_api->get_group("SAMEG314740");
+#print Data::Dumper->Dump([$batch], [qw(batch)]);
 
-my $vial = $biosamples_api->get_sample("SAMEA4342692");
+my $vial = $biosamples_api->get_sample_v4("SAMEA4342692");
 print Data::Dumper->Dump([$vial], [qw(vial)]);
+
+my $derived_from = $biosamples_api->get_derived_from("SAMEA4342692");
+print Data::Dumper->Dump([$derived_from], [qw(derived_from)]);
