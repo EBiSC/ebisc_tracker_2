@@ -9,12 +9,13 @@ RUN cpanm --notest ftp://ftp.fu-berlin.de/unix/languages/perl/authors/id/O/OA/OA
 
 COPY ./tracker/cpanfile /usr/src/myapp/cpanfile
 RUN cpanm --notest --installdeps /usr/src/myapp
-COPY ./tracker/lib /usr/src/myapp/lib
-COPY ./tracker/run.pl /usr/src/myapp/run.pl
-COPY container-entrypoint /usr/bin/
-CMD perl -I/usr/src/myapp/lib /usr/src/myapp/run.pl
 ENV HTTPS_CA_FILE=/usr/share/ca-certificates/mozilla
 RUN cpanm install Mozilla::CA
+COPY container-entrypoint /usr/bin/
+COPY ./tracker/lib /usr/src/myapp/lib
+COPY ./tracker/run.pl /usr/src/myapp/run.pl
+COPY ./tracker/test.pl /usr/src/myapp/test.pl
+CMD perl -I/usr/src/myapp/lib /usr/src/myapp/run.pl
 ENTRYPOINT ["container-entrypoint"]
 WORKDIR /usr/src/myapp
 USER 1001
