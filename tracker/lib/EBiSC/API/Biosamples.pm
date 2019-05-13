@@ -58,26 +58,28 @@ sub get_group {
 }
 
 sub get_derived_from {
-  my ($self, $id) = @_;
-  my %df_hash;
-  $self->_get_derived_from($id, \%df_hash);
-  return [keys %df_hash];
-};
+  my ($self, $id, $derived_from_cache) = @_;
 
-sub _get_derived_from {
-  my ($self, $id, $df_hash) = @_;
+  if (exists $derived_from_cache->{$id}) {
+	  return $derived_from_cache->{$id};
+  }
 
   my $sample = $self->get_sample_v4($id);
+  my @derived_from = ();
 
   RELATION:
   foreach my $relation (@{$sample->{relationships}}) {
     next RELATION if $relation->{type} ne "derived from";
     next RELATION if $relation->{source} ne $sample->{accession};
-    my $accession = $relation->{target};
-    next RELATION if $df_hash->{$accession};
-    $df_hash->{$accession} = 1;
-    $self->_get_derived_from($accession, $df_hash);
+    my $target = $relation->{target};
+	push(@derived_from, $target);
+	my $derived_from_target = $self->get_derived_from($target, $derived_from_cache);
+	foreach my $df (@{$derived_from_target}) {
+		push(@derived_from, $df);
+	}
   }
+  $derived_from_cache->{$id} = \@derived_from;
+  return \@derived_from;
 }
 
 

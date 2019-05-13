@@ -36,7 +36,17 @@ my $biosamples_api = EBiSC::API::Biosamples->new();
 #print Data::Dumper->Dump([$batch], [qw(batch)]);
 
 my $vial = $biosamples_api->get_sample_v4("SAMEA4342692");
-print Data::Dumper->Dump([$vial], [qw(vial)]);
+#print Data::Dumper->Dump([$vial], [qw(vial)]);
 
-my $derived_from = $biosamples_api->get_derived_from("SAMEA4342692");
+my %derived_from_cache = ();
+
+my $derived_from = $biosamples_api->get_derived_from("SAMEA4342692", \%derived_from_cache);
 print Data::Dumper->Dump([$derived_from], [qw(derived_from)]);
+
+my $derived_from2 = $biosamples_api->get_derived_from("SAMEA4342696", \%derived_from_cache);
+print Data::Dumper->Dump([$derived_from2], [qw(derived_from2)]);
+
+my $derived_from3 = $biosamples_api->get_derived_from("SAMEA104382010", \%derived_from_cache);
+print Data::Dumper->Dump([$derived_from3], [qw(derived_from3)]);
+
+print Data::Dumper->Dump([\%derived_from_cache], [qw(derived_from_cache)]);

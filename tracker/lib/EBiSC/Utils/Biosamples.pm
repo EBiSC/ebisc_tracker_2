@@ -29,6 +29,7 @@ sub sync_db {
     }
   }
 
+  my %derived_from_cache = ();
   my $cursor2 = $db->ims_line->c->find({}, {projection => {'obj.biosamples_id' => 1, 'obj.donor.biosamples_id' => 1, 'obj.batches.biosamples_id' => 1}});
   while (my $next = $cursor2->next) {
     ID:
@@ -53,7 +54,7 @@ sub sync_db {
 
       my $vial_derived_from = [];
       if (my $vial_id = $obj->{samples} && $obj->{samples}[0]) {
-        $vial_derived_from = $api->get_derived_from($vial_id);
+        $vial_derived_from = $api->get_derived_from($vial_id, \%derived_from_cache);
       }
 
       my $res = $db->biosample_group->c->insert_one({
